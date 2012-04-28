@@ -1,4 +1,4 @@
 ProfitBourse
 ============
 
-Le repository du projet logiciel &quot;ProfitBourse&quot;
+Le repository du projet logiciel &quot;ProfitBourse&quot;.
