@@ -18,7 +18,7 @@ public class GestionnaireMajWeb {
 		action.setVariation(nouvelleVariationDouble.floatValue());
 	}
 	
-	public static void majIndice(IndiceReference indice) {
+	public static void majIndice(Indice indice) {
 		Double nouveauCoursDouble = new Double(Math.random()*10000.0);
 		indice.setCours(nouveauCoursDouble.floatValue());
 		

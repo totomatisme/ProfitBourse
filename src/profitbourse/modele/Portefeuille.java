@@ -1,15 +1,17 @@
 package profitbourse.modele;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Currency;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 
-public class Portefeuille {
+public class Portefeuille implements Serializable {
 
+	private static final long serialVersionUID = -4302082586384377723L;
 	private String nom;
-	private HashSet<Action> actions;
+	private ArrayList<Action> actions;
 	private Currency devise;
 	private Projet projet;
 	
@@ -17,7 +19,7 @@ public class Portefeuille {
 		this.nom = nom;
 		this.devise = devise;
 		this.projet = projet;
-		this.actions = new HashSet<Action>();
+		this.actions = new ArrayList<Action>();
 	}
 	
 	public void ajouterNouvelleAction(Action action) {
@@ -70,15 +72,17 @@ public class Portefeuille {
 				+ this.calculerTotalAchat() + ", prix total actuel " + this.calculerTotalActuel() + ".";
 	}
 	
-	public class ActionNonPresenteDansLePortefeuille extends Exception {}
+	public class ActionNonPresenteDansLePortefeuille extends Exception {
+		private static final long serialVersionUID = -4261702974891478570L;
+	}
 	
 	// GETTERS et SETTERS
 
-	public HashSet<Action> getActions() {
+	public ArrayList<Action> getActions() {
 		return actions;
 	}
 
-	public void setActions(HashSet<Action> actions) {
+	public void setActions(ArrayList<Action> actions) {
 		this.actions = actions;
 	}
 

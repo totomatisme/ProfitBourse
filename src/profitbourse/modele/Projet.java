@@ -1,21 +1,30 @@
 package profitbourse.modele;
 
 import java.io.File;
-import java.util.HashSet;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Iterator;
 
-public class Projet {
+import profitbourse.modele.preferences.GestionnairePreferences;
+import profitbourse.modele.sauvegarde.GestionnaireSauvegarde;
+
+public class Projet implements Serializable {
 	
+	private static final long serialVersionUID = -2605790945339106666L;
 	private String nom;
 	private File cheminSauvegarde;
-	private HashSet<Portefeuille> portefeuilles;
-	private HashSet<IndiceReference> indices;
+	private boolean modifie;
+	private ArrayList<Portefeuille> portefeuilles;
+	private ArrayList<Indice> indices;
 	
-	public Projet(String nom, File cheminSauvegarde) {
+	public Projet(String nom) {
 		this.nom = nom;
-		this.cheminSauvegarde = cheminSauvegarde;
-		this.portefeuilles = new HashSet<Portefeuille>();
-		this.indices = new HashSet<IndiceReference>();
+		this.cheminSauvegarde = Projet.creerCheminDeSauvegardeParDefaut(nom);
+		this.modifie = false;
+		this.portefeuilles = new ArrayList<Portefeuille>();
+		this.indices = new ArrayList<Indice>();
 	}
 	
 	public void ajouterNouveauPortefeuille(Portefeuille portefeuille) {
@@ -29,11 +38,38 @@ public class Projet {
 		}
 	}
 	
-	public String projetEtPortefeuillesToString() {
+	public void ajouterNouvelIndice(Indice indice) {
+		this.getIndices().add(indice);
+	}
+	
+	public void supprimerIndice(Indice indice) throws IndiceNonPresentDansLeProjet {
+		boolean valide = this.getIndices().remove(indice);
+		if (!valide) {
+			throw new IndiceNonPresentDansLeProjet();
+		}
+	}
+	
+	public void majTousLesPortefeuillesEtIndices() {
+		Iterator<Portefeuille> it = this.getPortefeuilles().iterator();
+		while (it.hasNext()) {
+			it.next().majToutesLesActions();
+		}
+		Iterator<Indice> iter = this.getIndices().iterator();
+		while (iter.hasNext()) {
+			iter.next().majWeb();
+		}
+	}
+	
+	public String projetEtPortefeuillesEtIndicesToString() {
 		String affichage = this.toString();
 		Iterator<Portefeuille> it = this.getPortefeuilles().iterator();
 		while (it.hasNext()) {
 			affichage = affichage + "\n\t" + it.next().toString();
+		}
+		affichage = affichage + "\n\t--------------------------";
+		Iterator<Indice> iter = this.getIndices().iterator();
+		while (iter.hasNext()) {
+			affichage = affichage + "\n\t" + iter.next().toString();
 		}
 		return affichage;
 	}
@@ -42,7 +78,18 @@ public class Projet {
 		return "Projet : '" + this.getNom() + "' enregistré à l'adresse : '" + this.getCheminSauvegarde() + "'.";
 	}
 	
-	class PortefeuilleNonPresentDansLeProjet extends Exception {}
+	public void enregistrerProjet() throws FileNotFoundException, IOException {
+		GestionnaireSauvegarde.enregistrerProjet(this, this.getCheminSauvegarde());
+		GestionnairePreferences.setCheminSauvegarde(this.getCheminSauvegarde());
+	}
+	
+	class PortefeuilleNonPresentDansLeProjet extends Exception {
+		private static final long serialVersionUID = 3510456719637459437L;
+	}
+	
+	class IndiceNonPresentDansLeProjet extends Exception {
+		private static final long serialVersionUID = 3209724652088940744L;
+	}
 
 	// GETTERS et SETTERS
 	
@@ -54,24 +101,36 @@ public class Projet {
 		this.cheminSauvegarde = cheminSauvegarde;
 	}
 
-	public HashSet<Portefeuille> getPortefeuilles() {
+	public ArrayList<Portefeuille> getPortefeuilles() {
 		return portefeuilles;
 	}
 
-	public void setPortefeuilles(HashSet<Portefeuille> portefeuilles) {
+	public void setPortefeuilles(ArrayList<Portefeuille> portefeuilles) {
 		this.portefeuilles = portefeuilles;
 	}
 
-	public HashSet<IndiceReference> getIndices() {
+	public ArrayList<Indice> getIndices() {
 		return indices;
 	}
 
-	public void setIndices(HashSet<IndiceReference> indices) {
+	public void setIndices(ArrayList<Indice> indices) {
 		this.indices = indices;
 	}
 
 	public String getNom() {
 		return nom;
-	};
+	}
+
+	public boolean isModifie() {
+		return modifie;
+	}
+
+	public void setModifie(boolean modifie) {
+		this.modifie = modifie;
+	}
+	
+	public static File creerCheminDeSauvegardeParDefaut(String nomProjet) {
+		return new File(GestionnairePreferences.getDossierSauvegarde().toString() + File.separator + nomProjet + ".pb");
+	}
 
 }

@@ -133,6 +133,8 @@ public final class Money implements Comparable<Money>, Serializable {
 	 */
 	public static final class MismatchedCurrencyException extends
 			RuntimeException {
+		private static final long serialVersionUID = -2133335596668024685L;
+
 		MismatchedCurrencyException(String aMessage) {
 			super(aMessage);
 		}

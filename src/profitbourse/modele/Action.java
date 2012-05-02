@@ -1,13 +1,15 @@
 package profitbourse.modele;
 
+import java.io.Serializable;
 import java.text.DateFormat;
 import java.util.Date;
 
 import profitbourse.modele.majweb.GestionnaireMajWeb;
 
 
-public class Action {
+public class Action implements Serializable {
 
+	private static final long serialVersionUID = -7290657013980972234L;
 	private String nom;
 	private String codeISIN;
 	private int quantite;
@@ -35,6 +37,10 @@ public class Action {
 	
 	public void majWeb() {
 		GestionnaireMajWeb.majAction(this);
+	}
+	
+	public void vendreEnPartieAction(int quantiteVendue) {
+		this.setQuantite(this.getQuantite() - quantiteVendue);
 	}
 
 	public Money calculerTotalAchat() {
