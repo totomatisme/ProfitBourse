@@ -2,7 +2,7 @@ package profitbourse.modele;
 
 import java.io.Serializable;
 
-import profitbourse.modele.majweb.GestionnaireMajWeb;
+import profitbourse.modele.majaleatoire.GestionnaireMajWeb;
 
 public class Indice implements Serializable {
 

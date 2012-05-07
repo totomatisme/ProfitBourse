@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.text.DateFormat;
 import java.util.Date;
 
-import profitbourse.modele.majweb.GestionnaireMajWeb;
+import profitbourse.modele.majaleatoire.GestionnaireMajWeb;
 
 
 public class Action implements Serializable {
