@@ -51,6 +51,10 @@ public class Action implements Serializable {
 		return this.getCoursActuel().times(this.getQuantite());
 	}
 	
+	public Money calculerPlusValue() {
+		return this.getCoursActuel().minus(this.getCoursAchat());
+	}
+	
 	public String toString() {
 		return "Action : '" + this.getNom() + "', " + this.getCodeISIN() + ", " + this.getQuantite() 
 				+ " achetés le " + DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM).format(this.getDateAchat()) + " pour un cours de " + this.getCoursAchat() 

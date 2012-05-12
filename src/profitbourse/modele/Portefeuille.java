@@ -1,10 +1,12 @@
 package profitbourse.modele;
 
+import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Currency;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Observable;
 
 
 public class Portefeuille implements Serializable {
@@ -14,22 +16,44 @@ public class Portefeuille implements Serializable {
 	private ArrayList<Action> actions;
 	private Currency devise;
 	private Projet projet;
+	private transient NotificationActionAjoutee notificationActionAjoutee;
+	private transient NotificationActionSupprimee notificationActionSupprimee;
+	private transient NotificationMajActions notificationMajActions;
 	
 	public Portefeuille(String nom, Currency devise, Projet projet) {
 		this.nom = nom;
 		this.devise = devise;
 		this.projet = projet;
 		this.actions = new ArrayList<Action>();
+		this.notificationActionAjoutee = new NotificationActionAjoutee();
+		this.notificationActionSupprimee = new NotificationActionSupprimee();
+		this.notificationMajActions = new NotificationMajActions();
+	}
+	
+	/**
+	 * Permet de régler un problème dû à la sérialisation, pour réinitialiser les attributsts "transient".
+	 * @return l'objet correctement initialisé
+	 * @throws ObjectStreamException
+	 */
+	private Object readResolve() throws ObjectStreamException {
+		this.notificationActionAjoutee = new NotificationActionAjoutee();
+		this.notificationActionSupprimee = new NotificationActionSupprimee();
+		this.notificationMajActions = new NotificationMajActions();
+		return this;
 	}
 	
 	public void ajouterNouvelleAction(Action action) {
 		this.getActions().add(action);
+		this.notificationActionAjoutee.notifierAjoutAction(action, this.getActions().size()-1);
 	}
 	
 	public void supprimerTotalementAction(Action action) throws ActionNonPresenteDansLePortefeuille {
-		boolean valide = this.getActions().remove(action);
-		if (!valide) {
+		int row = this.getActions().indexOf(action);
+		if (row == -1) {
 			throw new ActionNonPresenteDansLePortefeuille();
+		} else {
+			this.getActions().remove(row);
+			this.notificationActionSupprimee.notifierSuppressionAction(action, row);
 		}
 	}
 	
@@ -38,6 +62,7 @@ public class Portefeuille implements Serializable {
 		while (it.hasNext()) {
 			it.next().majWeb();
 		}
+		this.notificationMajActions.notifierMajAction();
 	}
 	
 	public Money calculerTotalAchat() {
@@ -76,6 +101,41 @@ public class Portefeuille implements Serializable {
 		private static final long serialVersionUID = -4261702974891478570L;
 	}
 	
+	public class NotificationActionAjoutee extends Observable {
+		private int row = 0;
+		
+		public void notifierAjoutAction(Action actionAjoutee, int row) {
+			this.row = row;
+			this.setChanged();
+			this.notifyObservers(actionAjoutee);
+		}
+
+		public int getRow() {
+			return row;
+		}
+	}
+	
+	public class NotificationActionSupprimee extends Observable {
+		private int row = 0;
+		
+		public void notifierSuppressionAction(Action actionSupprimee, int row) {
+			this.row = row;
+			this.setChanged();
+			this.notifyObservers(actionSupprimee);
+		}
+
+		public int getRow() {
+			return row;
+		}
+	}
+	
+	public class NotificationMajActions extends Observable {
+		public void notifierMajAction() {
+			this.setChanged();
+			this.notifyObservers();
+		}
+	}
+	
 	// GETTERS et SETTERS
 
 	public ArrayList<Action> getActions() {
@@ -96,6 +156,18 @@ public class Portefeuille implements Serializable {
 
 	public Projet getProjet() {
 		return projet;
+	}
+
+	public NotificationActionAjoutee getNotificationActionAjoutee() {
+		return notificationActionAjoutee;
+	}
+
+	public NotificationActionSupprimee getNotificationActionSupprimee() {
+		return notificationActionSupprimee;
+	}
+
+	public NotificationMajActions getNotificationMajActions() {
+		return notificationMajActions;
 	}
 	
 }

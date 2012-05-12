@@ -1,19 +1,32 @@
 package profitbourse;
 
+import java.awt.BorderLayout;
+import java.awt.Container;
 import java.io.File;
 import java.util.Currency;
 import java.util.Iterator;
 import java.util.Locale;
 
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.plaf.metal.MetalLookAndFeel;
+
 import profitbourse.modele.*;
 import profitbourse.modele.preferences.GestionnairePreferences;
 import profitbourse.modele.sauvegarde.GestionnaireSauvegarde;
+import profitbourse.vue.*;
 
 public class Main {
 	
 	private static Projet projet;
 	private static Portefeuille portefeuille;
 	private static Action action;
+	private static FenetrePrincipale fenetrePrincipale;
+	private static ModeleTablePortefeuille modeleTablePortefeuille;
+	private static JTable tablePortefeuille;
+	private static JScrollPane tableScrollPane;
 
 	/**
 	 * @param args
@@ -21,7 +34,8 @@ public class Main {
 	public static void main(String[] args) {
 		Locale.setDefault(Locale.FRANCE);
 		
-		/*projet = new Projet("Projet1");
+		/*
+		projet = new Projet("Projet1");
 		
 		portefeuille = new Portefeuille("Valeures sûres", Currency.getInstance("EUR"), projet);
 		
@@ -60,9 +74,27 @@ public class Main {
 		Indice indice2 = new Indice("Dow Jones", "^DJI", projet);
 		indice2.majWeb();
 		projet.ajouterNouvelIndice(indice2);
-		
-		System.out.println("Initialisation terminée.");
 		*/
+		System.out.println("Initialisation terminée.");
+		
+		try {
+			UIManager.setLookAndFeel(new MetalLookAndFeel());
+		} catch (UnsupportedLookAndFeelException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		fenetrePrincipale = new FenetrePrincipale();
+		modeleTablePortefeuille = new ModeleTablePortefeuille();
+		modeleTablePortefeuille.setPortefeuille(null);
+		tablePortefeuille = new JTable(modeleTablePortefeuille);
+		tableScrollPane = new JScrollPane(tablePortefeuille);
+		
+		Container contentPane = fenetrePrincipale.getContentPane();
+		contentPane.setLayout(new BorderLayout());
+		contentPane.add(tableScrollPane, BorderLayout.CENTER);
+		
+		fenetrePrincipale.setVisible(true);
 		menuPrincipalConsole();
 	}
 	
@@ -168,9 +200,11 @@ public class Main {
 				int choix = Console.lireInt();
 				try {
 					portefeuille = projet.getPortefeuilles().get(choix);
+					modeleTablePortefeuille.setPortefeuille(portefeuille);
 					menuPortefeuilleConsole();
 				} catch (Exception e) {
 					System.out.println("Le numero entré ne convient pas.");
+					e.printStackTrace();
 				}
 				break;
 				
