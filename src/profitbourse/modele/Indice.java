@@ -25,6 +25,11 @@ public class Indice implements Serializable {
 		GestionnaireMajWeb.majIndice(this);
 	}
 	
+	public void majCoursEtVariation(float nouveauCours, float nouvelleVariation) {
+		this.cours = nouveauCours;
+		this.variation = nouvelleVariation;
+	}
+	
 	public String toString() {
 		return "Indice : '" + this.getNom() + "', '" + this.getCode() + "', cours : " + this.getCours() 
 				+ " pts (variation " + this.getVariation() + ").";
@@ -36,16 +41,8 @@ public class Indice implements Serializable {
 		return cours;
 	}
 
-	public void setCours(float cours) {
-		this.cours = cours;
-	}
-
 	public float getVariation() {
 		return variation;
-	}
-
-	public void setVariation(float variation) {
-		this.variation = variation;
 	}
 
 	public String getNom() {

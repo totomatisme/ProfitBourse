@@ -1,8 +1,10 @@
 package profitbourse.modele;
 
+import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.util.Date;
+import java.util.Observable;
 
 import profitbourse.modele.majaleatoire.GestionnaireMajWeb;
 
@@ -18,6 +20,7 @@ public class Action implements Serializable {
 	private Date dateAchat;
 	private float variation;
 	private Portefeuille portefeuille;
+	private transient NotificationModificationAction notificationModificationAction;
 	
 	public Action(String nom, String codeISIN, int quantite, Portefeuille portefeuille) {
 		this.nom = nom;
@@ -28,19 +31,34 @@ public class Action implements Serializable {
 		this.coursAchat = null;
 		this.coursActuel = null;
 		this.variation = 0;
+		this.notificationModificationAction = new NotificationModificationAction();
+	}
+	
+	private Object readResolve() throws ObjectStreamException {
+		this.notificationModificationAction = new NotificationModificationAction();
+		return this;
 	}
 	
 	public void premiereMajWeb() {
 		GestionnaireMajWeb.majAction(this);
-		this.setCoursAchat(this.getCoursActuel());
+		this.coursAchat = this.getCoursActuel();
+		this.notificationModificationAction.notifierModificationAction(this);
 	}
 	
 	public void majWeb() {
 		GestionnaireMajWeb.majAction(this);
+		this.notificationModificationAction.notifierModificationAction(this);
 	}
 	
 	public void vendreEnPartieAction(int quantiteVendue) {
-		this.setQuantite(this.getQuantite() - quantiteVendue);
+		this.quantite = this.getQuantite() - quantiteVendue;
+		this.notificationModificationAction.notifierModificationAction(this);
+	}
+	
+	public void majCoursEtVariation(Money nouveauCours, float nouvelleVariation) {
+		this.coursActuel = nouveauCours;
+		this.variation = nouvelleVariation;
+		this.notificationModificationAction.notifierModificationAction(this);
 	}
 
 	public Money calculerTotalAchat() {
@@ -62,30 +80,25 @@ public class Action implements Serializable {
 				+ " (variation " + this.getVariation() + "), au total " + this.calculerTotalActuel() + ".";
 	}
 	
+	public class NotificationModificationAction extends Observable {
+		public void notifierModificationAction(Action action) {
+			this.setChanged();
+			this.notifyObservers(action);
+		}
+	}
+	
 	// GETTERS et SETTERS
 
 	public int getQuantite() {
 		return quantite;
 	}
 
-	public void setQuantite(int quantite) {
-		this.quantite = quantite;
-	}
-
 	public Money getCoursActuel() {
 		return coursActuel;
 	}
 
-	public void setCoursActuel(Money cours) {
-		this.coursActuel = cours;
-	}
-
 	public float getVariation() {
 		return variation;
-	}
-
-	public void setVariation(float variation) {
-		this.variation = variation;
 	}
 
 	public String getNom() {
@@ -108,8 +121,8 @@ public class Action implements Serializable {
 		return coursAchat;
 	}
 
-	private void setCoursAchat(Money coursAchat) {
-		this.coursAchat = coursAchat;
+	public NotificationModificationAction getNotificationModificationAction() {
+		return notificationModificationAction;
 	}
 	
 }

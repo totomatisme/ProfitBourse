@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Observable;
 
+import profitbourse.modele.majaleatoire.GestionnaireMajWeb;
+
 
 public class Portefeuille implements Serializable {
 
@@ -42,7 +44,10 @@ public class Portefeuille implements Serializable {
 		return this;
 	}
 	
-	public void ajouterNouvelleAction(Action action) {
+	public void ajouterNouvelleAction(Action action) throws ActionDejaPresenteDansLePortefeuille {
+		if (this.getActions().contains(action)) {
+			throw new ActionDejaPresenteDansLePortefeuille();
+		}
 		this.getActions().add(action);
 		this.notificationActionAjoutee.notifierAjoutAction(action, this.getActions().size()-1);
 	}
@@ -60,7 +65,7 @@ public class Portefeuille implements Serializable {
 	public void majToutesLesActions() {
 		Iterator<Action> it = this.getActions().iterator();
 		while (it.hasNext()) {
-			it.next().majWeb();
+			GestionnaireMajWeb.majAction(it.next());
 		}
 		this.notificationMajActions.notifierMajAction();
 	}
@@ -99,6 +104,10 @@ public class Portefeuille implements Serializable {
 	
 	public class ActionNonPresenteDansLePortefeuille extends Exception {
 		private static final long serialVersionUID = -4261702974891478570L;
+	}
+	
+	public class ActionDejaPresenteDansLePortefeuille extends Exception {
+		private static final long serialVersionUID = 1650795751351991726L;
 	}
 	
 	public class NotificationActionAjoutee extends Observable {
@@ -140,10 +149,6 @@ public class Portefeuille implements Serializable {
 
 	public ArrayList<Action> getActions() {
 		return actions;
-	}
-
-	public void setActions(ArrayList<Action> actions) {
-		this.actions = actions;
 	}
 
 	public String getNom() {

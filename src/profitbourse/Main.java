@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.io.File;
 import java.util.Currency;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Locale;
 
@@ -14,12 +15,16 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
 import profitbourse.modele.*;
+import profitbourse.modele.Portefeuille.ActionDejaPresenteDansLePortefeuille;
 import profitbourse.modele.preferences.GestionnairePreferences;
 import profitbourse.modele.sauvegarde.GestionnaireSauvegarde;
 import profitbourse.vue.*;
+import profitbourse.vue.table.DateCellRenderer;
+import profitbourse.vue.table.ModeleTablePortefeuille;
 
 public class Main {
 	
+	private static Controleur controleur;
 	private static Projet projet;
 	private static Portefeuille portefeuille;
 	private static Action action;
@@ -32,9 +37,9 @@ public class Main {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		/*
 		Locale.setDefault(Locale.FRANCE);
 		
-		/*
 		projet = new Projet("Projet1");
 		
 		portefeuille = new Portefeuille("Valeures sûres", Currency.getInstance("EUR"), projet);
@@ -74,20 +79,19 @@ public class Main {
 		Indice indice2 = new Indice("Dow Jones", "^DJI", projet);
 		indice2.majWeb();
 		projet.ajouterNouvelIndice(indice2);
-		*/
+		
 		System.out.println("Initialisation terminée.");
 		
 		try {
 			UIManager.setLookAndFeel(new MetalLookAndFeel());
 		} catch (UnsupportedLookAndFeelException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
 		fenetrePrincipale = new FenetrePrincipale();
-		modeleTablePortefeuille = new ModeleTablePortefeuille();
-		modeleTablePortefeuille.setPortefeuille(null);
+		//modeleTablePortefeuille = new ModeleTablePortefeuille();
 		tablePortefeuille = new JTable(modeleTablePortefeuille);
+		tablePortefeuille.setDefaultRenderer(Date.class, new DateCellRenderer());
 		tableScrollPane = new JScrollPane(tablePortefeuille);
 		
 		Container contentPane = fenetrePrincipale.getContentPane();
@@ -96,6 +100,8 @@ public class Main {
 		
 		fenetrePrincipale.setVisible(true);
 		menuPrincipalConsole();
+		*/
+		controleur = new Controleur();
 	}
 	
 	public static void menuPrincipalConsole() {
@@ -200,7 +206,7 @@ public class Main {
 				int choix = Console.lireInt();
 				try {
 					portefeuille = projet.getPortefeuilles().get(choix);
-					modeleTablePortefeuille.setPortefeuille(portefeuille);
+					//modeleTablePortefeuille.setPortefeuille(portefeuille);
 					menuPortefeuilleConsole();
 				} catch (Exception e) {
 					System.out.println("Le numero entré ne convient pas.");
@@ -402,7 +408,11 @@ public class Main {
 					break;
 				}
 				Action nouvelleAction = new Action(nom, code, quantite, portefeuille);
-				portefeuille.ajouterNouvelleAction(nouvelleAction);
+				try {
+					portefeuille.ajouterNouvelleAction(nouvelleAction);
+				} catch (ActionDejaPresenteDansLePortefeuille e1) {
+					e1.printStackTrace();
+				}
 				nouvelleAction.premiereMajWeb();
 				System.out.println("L'action '" + nouvelleAction.getNom() + "' a été ajoutée.");
 				break;
