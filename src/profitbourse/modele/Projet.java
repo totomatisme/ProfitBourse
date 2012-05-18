@@ -27,6 +27,17 @@ public class Projet implements Serializable {
 		this.indices = new ArrayList<Indice>();
 	}
 	
+	/**
+	 * Permet de régler un problème dû à la sérialisation, pour réinitialiser les attributsts "transient".
+	 */
+	public void initialisationApresChargement() {
+		// On initialise tous les portefeuilles de ce projet.
+		Iterator<Portefeuille> it = this.getPortefeuilles().iterator();
+		while (it.hasNext()) {
+			it.next().initialisationApresChargement();
+		}
+	}
+	
 	public void ajouterNouveauPortefeuille(Portefeuille portefeuille) {
 		this.getPortefeuilles().add(portefeuille);
 	}

@@ -1,7 +1,10 @@
 package profitbourse.vue;
 
+import java.awt.BorderLayout;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Insets;
 import java.io.File;
 import java.util.Currency;
 import java.util.Date;
@@ -9,6 +12,7 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Observable;
 
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.UIManager;
@@ -21,6 +25,7 @@ import profitbourse.modele.Portefeuille.ActionDejaPresenteDansLePortefeuille;
 import profitbourse.modele.preferences.GestionnairePreferences;
 import profitbourse.modele.sauvegarde.GestionnaireSauvegarde;
 import profitbourse.vue.table.DateCellRenderer;
+import profitbourse.vue.table.ModeleTableBilan;
 import profitbourse.vue.table.ModeleTablePortefeuille;
 
 public class Controleur {
@@ -29,12 +34,21 @@ public class Controleur {
 	private Portefeuille portefeuilleActuel;
 	private Action actionActuelle;
 	
-	private ModeleTablePortefeuille modeleTablePortefeuille;
 	private FenetrePrincipale fenetrePrincipale;
-	private JTable tablePortefeuille;
-	private JScrollPane tableScrollPane;
+	
+	private JPanel panel1;
 	private LabelPortefeuilleContenu labelPortefeuilleContenu;
+	
+	private ModeleTablePortefeuille modeleTablePortefeuille;
+	private JTable tablePortefeuille;
+	private JScrollPane tablePortefeuilleScrollPane;
+	
+	private JPanel panel2;
 	private LabelPortefeuilleBilan labelPortefeuilleBilan;
+	private JPanel panel3;
+	private JPanel panel4;
+	private ModeleTableBilan modeleTableBilan;
+	private JTable tableBilan;
 	
 	private NotificationChangementDePortefeuilleCourant notificationChangementDePortefeuilleCourant;
 	
@@ -57,19 +71,40 @@ public class Controleur {
 		}
 		this.fenetrePrincipale = new FenetrePrincipale();
 		
+		this.panel1 = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		this.labelPortefeuilleContenu = new LabelPortefeuilleContenu(this);
-		this.labelPortefeuilleBilan = new LabelPortefeuilleBilan(this);
+		this.panel1.add(this.labelPortefeuilleContenu);
 		
 		this.modeleTablePortefeuille = new ModeleTablePortefeuille(this);
 		this.tablePortefeuille = new JTable(this.modeleTablePortefeuille);
 		this.tablePortefeuille.setDefaultRenderer(Date.class, new DateCellRenderer());
-		this.tableScrollPane = new JScrollPane(this.tablePortefeuille);
+		this.tablePortefeuilleScrollPane = new JScrollPane(this.tablePortefeuille);
+		
+		this.panel2 = new JPanel(new BorderLayout());
+		this.panel2.setPreferredSize(new Dimension(100, 70));
+		
+		this.labelPortefeuilleBilan = new LabelPortefeuilleBilan(this);
+		
+		this.panel3 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		this.modeleTableBilan = new ModeleTableBilan(this);
+		this.tableBilan = new JTable(this.modeleTableBilan);
+		
+		this.panel2.add(this.labelPortefeuilleBilan, BorderLayout.NORTH);
+		
+		this.panel4 = new JPanel();
+		this.panel4.setPreferredSize(new Dimension(300, 55));
+		this.panel4.add(this.tableBilan.getTableHeader());
+		this.panel4.add(this.tableBilan);
+		
+		this.panel3.add(this.panel4);
+		
+		this.panel2.add(this.panel3, BorderLayout.CENTER);
 		
 		Container contentPane = this.fenetrePrincipale.getContentPane();
-		contentPane.setLayout(new FlowLayout(FlowLayout.LEFT));
-		contentPane.add(this.labelPortefeuilleContenu);
-		contentPane.add(this.tableScrollPane);
-		contentPane.add(this.labelPortefeuilleBilan);
+		contentPane.setLayout(new BorderLayout());
+		contentPane.add(this.panel1, BorderLayout.NORTH);
+		contentPane.add(this.tablePortefeuilleScrollPane, BorderLayout.CENTER);
+		contentPane.add(this.panel2, BorderLayout.SOUTH);
 		
 		this.fenetrePrincipale.setVisible(true);
 	}
@@ -153,12 +188,16 @@ public class Controleur {
 					//System.out.println("BUG DE LA CLASSE Console.java FOURNIE PAR SUPELEC !");
 					chemin = Console.lireLigne();
 				}
+				if (chemin.equals("")) {
+					chemin = GestionnairePreferences.getCheminSauvegarde().toString();
+				}
 				try {
 					this.projetActuel = GestionnaireSauvegarde.chargerProjetDepuisFichier(new File(chemin));
 					System.out.println("Le nouveau projet a été chargé avec succès.");
 					this.menuProjetConsole();
 				} catch (Exception e) {
 					System.out.println("Erreur lors du chargement du projet à l'adresse : '" + chemin + "'.");
+					e.printStackTrace();
 				}
 				break;
 				

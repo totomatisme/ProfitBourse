@@ -1,6 +1,5 @@
 package profitbourse.modele;
 
-import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.util.Date;
@@ -32,11 +31,15 @@ public class Action implements Serializable {
 		this.coursActuel = null;
 		this.variation = 0;
 		this.notificationModificationAction = new NotificationModificationAction();
+		this.notificationModificationAction.addObserver(this.portefeuille.getObservateurModificationAction());
 	}
 	
-	private Object readResolve() throws ObjectStreamException {
+	/**
+	 * Permet de régler un problème dû à la sérialisation, pour réinitialiser les attributsts "transient".
+	 */
+	public void initialisationApresChargement() {
 		this.notificationModificationAction = new NotificationModificationAction();
-		return this;
+		this.notificationModificationAction.addObserver(this.portefeuille.getObservateurModificationAction());
 	}
 	
 	public void premiereMajWeb() {

@@ -2,13 +2,11 @@ package profitbourse.vue.table;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.table.AbstractTableModel;
 
-import profitbourse.modele.Action;
 import profitbourse.modele.Portefeuille;
 import profitbourse.vue.Controleur;
 
@@ -142,9 +140,10 @@ public class ModeleTablePortefeuille extends AbstractTableModel {
 	
 	private class ObservateurModificationAction implements Observer {
 		public void update(Observable arg0, Object arg1) {
-			int index = portefeuille.getActions().indexOf(arg1);
-			if (index != -1) {
-				fireTableRowsUpdated(index, index);
+			Portefeuille.NotificationModificationAction notificationModificationAction = portefeuille.getNotificationModificationAction();
+			if (notificationModificationAction == arg0) {
+				int row = notificationModificationAction.getRow();
+				fireTableRowsUpdated(row, row);
 			}
 		}
 	}
@@ -157,20 +156,14 @@ public class ModeleTablePortefeuille extends AbstractTableModel {
 				portefeuillePrecedant.getNotificationActionAjoutee().deleteObserver(observateurAjoutAction);
 				portefeuillePrecedant.getNotificationActionSupprimee().deleteObserver(observateurSuppressionAction);
 				portefeuillePrecedant.getNotificationMajActions().deleteObserver(observateurMajActions);
-				Iterator<Action> it = portefeuillePrecedant.getActions().iterator();
-				while (it.hasNext()) {
-					it.next().getNotificationModificationAction().deleteObserver(observateurModificationAction);
-				}
+				portefeuillePrecedant.getNotificationModificationAction().deleteObserver(observateurModificationAction);
 			}
 			portefeuille = nouveauPortefeuille;
 			if (portefeuille != null) {
 				portefeuille.getNotificationActionAjoutee().addObserver(observateurAjoutAction);
 				portefeuille.getNotificationActionSupprimee().addObserver(observateurSuppressionAction);
 				portefeuille.getNotificationMajActions().addObserver(observateurMajActions);
-				Iterator<Action> it = portefeuille.getActions().iterator();
-				while (it.hasNext()) {
-					it.next().getNotificationModificationAction().addObserver(observateurModificationAction);
-				}
+				portefeuille.getNotificationModificationAction().addObserver(observateurModificationAction);
 			}
 			fireTableDataChanged();
 		}

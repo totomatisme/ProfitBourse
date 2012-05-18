@@ -1,12 +1,12 @@
 package profitbourse.modele;
 
-import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Currency;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Observable;
+import java.util.Observer;
 
 import profitbourse.modele.majaleatoire.GestionnaireMajWeb;
 
@@ -21,6 +21,10 @@ public class Portefeuille implements Serializable {
 	private transient NotificationActionAjoutee notificationActionAjoutee;
 	private transient NotificationActionSupprimee notificationActionSupprimee;
 	private transient NotificationMajActions notificationMajActions;
+	private transient NotificationModificationPortefeuille notificationModificationPortefeuille;
+	private transient ObservateurDetectionModificationPortefeuille observateurDetectionModificationPortefeuille;
+	private transient NotificationModificationAction notificationModificationAction;
+	private transient ObservateurModificationAction observateurModificationAction;
 	
 	public Portefeuille(String nom, Currency devise, Projet projet) {
 		this.nom = nom;
@@ -30,18 +34,40 @@ public class Portefeuille implements Serializable {
 		this.notificationActionAjoutee = new NotificationActionAjoutee();
 		this.notificationActionSupprimee = new NotificationActionSupprimee();
 		this.notificationMajActions = new NotificationMajActions();
+		this.notificationModificationPortefeuille = new NotificationModificationPortefeuille();
+		this.notificationModificationAction = new NotificationModificationAction();
+		this.observateurModificationAction = new ObservateurModificationAction();
+		this.observateurDetectionModificationPortefeuille = new ObservateurDetectionModificationPortefeuille();
+		
+		this.notificationActionAjoutee.addObserver(this.observateurDetectionModificationPortefeuille);
+		this.notificationActionSupprimee.addObserver(this.observateurDetectionModificationPortefeuille);
+		this.notificationMajActions.addObserver(this.observateurDetectionModificationPortefeuille);
+		this.notificationModificationAction.addObserver(this.observateurDetectionModificationPortefeuille);
 	}
 	
 	/**
 	 * Permet de régler un problème dû à la sérialisation, pour réinitialiser les attributsts "transient".
-	 * @return l'objet correctement initialisé
-	 * @throws ObjectStreamException
 	 */
-	private Object readResolve() throws ObjectStreamException {
+	public void initialisationApresChargement() {
 		this.notificationActionAjoutee = new NotificationActionAjoutee();
 		this.notificationActionSupprimee = new NotificationActionSupprimee();
 		this.notificationMajActions = new NotificationMajActions();
-		return this;
+		this.notificationModificationPortefeuille = new NotificationModificationPortefeuille();
+		this.notificationModificationAction = new NotificationModificationAction();
+		this.observateurModificationAction = new ObservateurModificationAction();
+		this.observateurDetectionModificationPortefeuille = new ObservateurDetectionModificationPortefeuille();
+		
+		// observateurDetectionModificationPortefeuille observe toute les modifications possibles de ce portefeuille.
+		this.notificationActionAjoutee.addObserver(this.observateurDetectionModificationPortefeuille);
+		this.notificationActionSupprimee.addObserver(this.observateurDetectionModificationPortefeuille);
+		this.notificationMajActions.addObserver(this.observateurDetectionModificationPortefeuille);
+		this.notificationModificationAction.addObserver(this.observateurDetectionModificationPortefeuille);
+		
+		// On fait l'initialisation de toutes les actions de ce portefeuille.
+		Iterator<Action> it = this.getActions().iterator();
+		while (it.hasNext()) {
+			it.next().initialisationApresChargement();
+		}
 	}
 	
 	public void ajouterNouvelleAction(Action action) throws ActionDejaPresenteDansLePortefeuille {
@@ -86,6 +112,10 @@ public class Portefeuille implements Serializable {
 			somme = somme.plus(it.next().calculerTotalActuel());
 		}
 		return somme;
+	}
+	
+	public Money calculerPlusValue() {
+		return this.calculerTotalActuel().minus(this.calculerTotalAchat());
 	}
 	
 	public String portefeuilleEtActionsToString() {
@@ -145,6 +175,43 @@ public class Portefeuille implements Serializable {
 		}
 	}
 	
+	public class NotificationModificationAction extends Observable {
+		private int row = 0;
+		
+		public void notifierModificationAction(Action action, int row) {
+			this.row = row;
+			this.setChanged();
+			this.notifyObservers(action);
+		}
+		
+		public int getRow() {
+			return row;
+		}
+	}
+	
+	private class ObservateurModificationAction implements Observer {
+		public void update(Observable arg0, Object arg1) {
+			Action actionModifiee = (Action)arg1;
+			int index = actions.indexOf(actionModifiee);
+			if (index != -1) {
+				notificationModificationAction.notifierModificationAction(actionModifiee, index);
+			}
+		}
+	}
+	
+	public class NotificationModificationPortefeuille extends Observable {
+		public void notifierModificationPortefeuille(Portefeuille portefeuille) {
+			this.setChanged();
+			this.notifyObservers(portefeuille);
+		}
+	}
+	
+	private class ObservateurDetectionModificationPortefeuille implements Observer {
+		public void update(Observable arg0, Object arg1) {
+			notificationModificationPortefeuille.notifierModificationPortefeuille(Portefeuille.this);
+		}
+	}
+	
 	// GETTERS et SETTERS
 
 	public ArrayList<Action> getActions() {
@@ -173,6 +240,22 @@ public class Portefeuille implements Serializable {
 
 	public NotificationMajActions getNotificationMajActions() {
 		return notificationMajActions;
+	}
+
+	public NotificationModificationPortefeuille getNotificationModificationPortefeuille() {
+		return notificationModificationPortefeuille;
+	}
+
+	public ObservateurDetectionModificationPortefeuille getObservateurDetectionModificationPortefeuille() {
+		return observateurDetectionModificationPortefeuille;
+	}
+
+	public ObservateurModificationAction getObservateurModificationAction() {
+		return observateurModificationAction;
+	}
+
+	public NotificationModificationAction getNotificationModificationAction() {
+		return notificationModificationAction;
 	}
 	
 }
