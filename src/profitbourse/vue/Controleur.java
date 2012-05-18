@@ -38,8 +38,13 @@ public class Controleur {
 	private FenetrePrincipale fenetrePrincipale;
 	
 	private JSplitPane splitPane;
-	private JScrollPane scrollPaneGauche;
+	private JScrollPane scrollPaneGauche1;
 	private JPanel panelDroit;
+	
+	private JSplitPane splitPaneGauche;
+	private JScrollPane scrollPaneGauche2;
+	private ModeleTableIndices modeleTableIndices;
+	private JTable tableIndices;
 	
 	private ModeleTreeProjet modeleTreeProjet;
 	private JTree treeProjet;
@@ -85,14 +90,24 @@ public class Controleur {
 		}
 		this.fenetrePrincipale = new FenetrePrincipale();
 		
-		this.splitPane = new JSplitPane();
+		this.splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		this.splitPane.setOneTouchExpandable(true);
 		
-		this.scrollPaneGauche = new JScrollPane();
+		this.scrollPaneGauche1 = new JScrollPane();
 		this.modeleTreeProjet = new ModeleTreeProjet(this, null);
 		this.treeProjet = new JTree(this.modeleTreeProjet);
-		this.scrollPaneGauche.setViewportView(this.treeProjet);
-		this.splitPane.setLeftComponent(this.scrollPaneGauche);
+		this.scrollPaneGauche1.setViewportView(this.treeProjet);
+		
+		this.splitPaneGauche = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+		this.splitPaneGauche.setOneTouchExpandable(true);
+		this.modeleTableIndices = new ModeleTableIndices(this);
+		this.tableIndices = new JTable(this.modeleTableIndices);
+		this.scrollPaneGauche2 = new JScrollPane(this.tableIndices);
+		
+		this.splitPaneGauche.setTopComponent(this.scrollPaneGauche1);
+		this.splitPaneGauche.setBottomComponent(this.scrollPaneGauche2);
+		
+		this.splitPane.setLeftComponent(this.splitPaneGauche);
 		
 		this.panel1 = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		this.labelPortefeuilleContenu = new LabelPortefeuilleContenu(this);
@@ -160,6 +175,7 @@ public class Controleur {
 			}
 			this.projetActuel = nouveauProjetActuel;
 			this.changerLeTreeProjet();
+			this.changerDePortefeuilleActuel(null);
 			this.notificationChangementDeProjetCourant.notifierChangementDeProjetCourant(nouveauProjetActuel);
 			if (nouveauProjetActuel != null) {
 				nouveauProjetActuel.getNotificationPortefeuilleSupprime().addObserver(this.observateurSuppressionPortefeuille);

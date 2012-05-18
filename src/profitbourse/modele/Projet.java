@@ -7,7 +7,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Observable;
+import java.util.Observer;
 
+import profitbourse.modele.majaleatoire.GestionnaireMajWeb;
 import profitbourse.modele.preferences.GestionnairePreferences;
 import profitbourse.modele.sauvegarde.GestionnaireSauvegarde;
 
@@ -21,6 +23,11 @@ public class Projet implements Serializable {
 	private ArrayList<Indice> indices;
 	private transient NotificationPortefeuilleAjoute notificationPortefeuilleAjoute;
 	private transient NotificationPortefeuilleSupprime notificationPortefeuilleSupprime;
+	private transient NotificationMajIndices notificationMajIndices;
+	private transient NotificationIndiceAjoute notificationIndiceAjoute;
+	private transient NotificationIndiceSupprime notificationIndiceSupprime;
+	private transient NotificationModificationIndice notificationModificationIndice;
+	private transient ObservateurModificationIndice observateurModificationIndice;
 	
 	public Projet(String nom) {
 		this.nom = nom;
@@ -30,19 +37,35 @@ public class Projet implements Serializable {
 		this.indices = new ArrayList<Indice>();
 		this.notificationPortefeuilleAjoute = new NotificationPortefeuilleAjoute();
 		this.notificationPortefeuilleSupprime = new NotificationPortefeuilleSupprime();
+		this.notificationMajIndices = new NotificationMajIndices();
+		this.notificationIndiceAjoute = new NotificationIndiceAjoute();
+		this.notificationIndiceSupprime = new NotificationIndiceSupprime();
+		this.notificationModificationIndice = new NotificationModificationIndice();
+		this.observateurModificationIndice = new ObservateurModificationIndice();
 	}
 	
 	/**
-	 * Permet de régler un problème dû à la sérialisation, pour réinitialiser les attributsts "transient".
+	 * Permet de régler un problème dû à la sérialisation, pour réinitialiser les attributs "transient".
 	 */
 	public void initialisationApresChargement() {
 		this.notificationPortefeuilleAjoute = new NotificationPortefeuilleAjoute();
 		this.notificationPortefeuilleSupprime = new NotificationPortefeuilleSupprime();
+		this.notificationMajIndices = new NotificationMajIndices();
+		this.notificationIndiceAjoute = new NotificationIndiceAjoute();
+		this.notificationIndiceSupprime = new NotificationIndiceSupprime();
+		this.notificationModificationIndice = new NotificationModificationIndice();
+		this.observateurModificationIndice = new ObservateurModificationIndice();
 		
 		// On initialise tous les portefeuilles de ce projet.
 		Iterator<Portefeuille> it = this.getPortefeuilles().iterator();
 		while (it.hasNext()) {
 			it.next().initialisationApresChargement();
+		}
+		
+		// On initialise tous les indices de ce projet.
+		Iterator<Indice> iter = this.getIndices().iterator();
+		while (iter.hasNext()) {
+			iter.next().initialisationApresChargement();
 		}
 	}
 	
@@ -64,12 +87,17 @@ public class Projet implements Serializable {
 	
 	public void ajouterNouvelIndice(Indice indice) {
 		this.getIndices().add(indice);
+		int row = this.getIndices().size() - 1;
+		this.notificationIndiceAjoute.notifierIndiceAjoute(indice, row);
 	}
 	
 	public void supprimerIndice(Indice indice) throws IndiceNonPresentDansLeProjet {
-		boolean valide = this.getIndices().remove(indice);
-		if (!valide) {
+		int row = this.getIndices().indexOf(indice);
+		if (row == -1) {
 			throw new IndiceNonPresentDansLeProjet();
+		} else {
+			this.getIndices().remove(row);
+			this.notificationIndiceSupprime.notifierIndiceSupprime(indice, row);
 		}
 	}
 	
@@ -80,8 +108,9 @@ public class Projet implements Serializable {
 		}
 		Iterator<Indice> iter = this.getIndices().iterator();
 		while (iter.hasNext()) {
-			iter.next().majWeb();
+			GestionnaireMajWeb.majIndice(iter.next());
 		}
+		this.notificationMajIndices.notifierMajIndices();
 	}
 	
 	public String projetEtPortefeuillesEtIndicesToString() {
@@ -143,6 +172,65 @@ public class Projet implements Serializable {
 			return row;
 		}
 	}
+	
+	public class NotificationMajIndices extends Observable {
+		public void notifierMajIndices() {
+			this.setChanged();
+			this.notifyObservers();
+		}
+	}
+	
+	public class NotificationIndiceAjoute extends Observable {
+		private int row = 0;
+		
+		public void notifierIndiceAjoute(Indice indiceAjoute, int row) {
+			this.row = row;
+			this.setChanged();
+			this.notifyObservers(indiceAjoute);
+		}
+
+		public int getRow() {
+			return row;
+		}
+	}
+	
+	public class NotificationIndiceSupprime extends Observable {
+		private int row = 0;
+		
+		public void notifierIndiceSupprime(Indice indiceSupprime, int row) {
+			this.row = row;
+			this.setChanged();
+			this.notifyObservers(indiceSupprime);
+		}
+
+		public int getRow() {
+			return row;
+		}
+	}
+	
+	public class NotificationModificationIndice extends Observable {
+		private int row = 0;
+		
+		public void notifierModificationIndice(Indice indice, int row) {
+			this.row = row;
+			this.setChanged();
+			this.notifyObservers(indice);
+		}
+		
+		public int getRow() {
+			return row;
+		}
+	}
+	
+	private class ObservateurModificationIndice implements Observer {
+		public void update(Observable arg0, Object arg1) {
+			Indice indiceModifie = (Indice)arg1;
+			int index = indices.indexOf(indiceModifie);
+			if (index != -1) {
+				notificationModificationIndice.notifierModificationIndice(indiceModifie, index);
+			}
+		}
+	}
 
 	// GETTERS et SETTERS
 	
@@ -192,6 +280,26 @@ public class Projet implements Serializable {
 
 	public NotificationPortefeuilleSupprime getNotificationPortefeuilleSupprime() {
 		return notificationPortefeuilleSupprime;
+	}
+
+	public NotificationMajIndices getNotificationMajIndices() {
+		return notificationMajIndices;
+	}
+
+	public NotificationIndiceAjoute getNotificationIndiceAjoute() {
+		return notificationIndiceAjoute;
+	}
+
+	public NotificationIndiceSupprime getNotificationIndiceSupprime() {
+		return notificationIndiceSupprime;
+	}
+
+	public NotificationModificationIndice getNotificationModificationIndice() {
+		return notificationModificationIndice;
+	}
+
+	public ObservateurModificationIndice getObservateurModificationIndice() {
+		return observateurModificationIndice;
 	}
 
 }

@@ -14,7 +14,7 @@ public class FenetrePrincipale extends JFrame {
 		super("ProfitBourse");
 		
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.setSize(800,170);
+		this.setSize(800,300);
 	}
 	
 }

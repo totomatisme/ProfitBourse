@@ -46,7 +46,7 @@ public class Portefeuille implements Serializable {
 	}
 	
 	/**
-	 * Permet de régler un problème dû à la sérialisation, pour réinitialiser les attributsts "transient".
+	 * Permet de régler un problème dû à la sérialisation, pour réinitialiser les attributs "transient".
 	 */
 	public void initialisationApresChargement() {
 		this.notificationActionAjoutee = new NotificationActionAjoutee();
@@ -93,7 +93,7 @@ public class Portefeuille implements Serializable {
 		while (it.hasNext()) {
 			GestionnaireMajWeb.majAction(it.next());
 		}
-		this.notificationMajActions.notifierMajAction();
+		this.notificationMajActions.notifierMajActions();
 	}
 	
 	public Money calculerTotalAchat() {
@@ -171,7 +171,7 @@ public class Portefeuille implements Serializable {
 	}
 	
 	public class NotificationMajActions extends Observable {
-		public void notifierMajAction() {
+		public void notifierMajActions() {
 			this.setChanged();
 			this.notifyObservers();
 		}

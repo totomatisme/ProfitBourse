@@ -35,7 +35,7 @@ public class Action implements Serializable {
 	}
 	
 	/**
-	 * Permet de régler un problème dû à la sérialisation, pour réinitialiser les attributsts "transient".
+	 * Permet de régler un problème dû à la sérialisation, pour réinitialiser les attributs "transient".
 	 */
 	public void initialisationApresChargement() {
 		this.notificationModificationAction = new NotificationModificationAction();
@@ -61,7 +61,6 @@ public class Action implements Serializable {
 	public void majCoursEtVariation(Money nouveauCours, float nouvelleVariation) {
 		this.coursActuel = nouveauCours;
 		this.variation = nouvelleVariation;
-		this.notificationModificationAction.notifierModificationAction(this);
 	}
 
 	public Money calculerTotalAchat() {
