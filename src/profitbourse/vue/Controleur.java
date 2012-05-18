@@ -15,6 +15,7 @@ import java.util.Observable;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -37,6 +38,10 @@ public class Controleur {
 	
 	private FenetrePrincipale fenetrePrincipale;
 	
+	private JSplitPane splitPane;
+	private JScrollPane scrollPaneGauche;
+	private JPanel panelGauche;
+	
 	private JPanel panel1;
 	private LabelPortefeuilleContenu labelPortefeuilleContenu;
 	
@@ -49,6 +54,7 @@ public class Controleur {
 	private JPanel panel3;
 	private JPanel panel4;
 	private JPanel panel5;
+	private JPanel panel6;
 	private ModeleTableBilan modeleTableBilan;
 	private JTable tableBilan;
 	
@@ -73,6 +79,13 @@ public class Controleur {
 		}
 		this.fenetrePrincipale = new FenetrePrincipale();
 		
+		this.splitPane = new JSplitPane();
+		this.splitPane.setOneTouchExpandable(true);
+		
+		this.scrollPaneGauche = new JScrollPane();
+		
+		this.splitPane.setLeftComponent(this.scrollPaneGauche);
+		
 		this.panel1 = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		this.labelPortefeuilleContenu = new LabelPortefeuilleContenu(this);
 		this.panel1.add(this.labelPortefeuilleContenu);
@@ -90,11 +103,11 @@ public class Controleur {
 		this.labelPortefeuilleBilan = new LabelPortefeuilleBilan(this);
 		this.panel5.add(this.labelPortefeuilleBilan);
 		
-		this.panel3 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		this.panel3 = new JPanel(new BorderLayout());
 		//this.panel3.setBackground(Color.BLUE);
 		this.modeleTableBilan = new ModeleTableBilan(this);
 		this.tableBilan = new JTable(this.modeleTableBilan);
-		this.tableBilan.setPreferredSize(new Dimension(600,16));
+		//this.tableBilan.setPreferredSize(new Dimension(600,16));
 		
 		this.panel2.add(this.panel5, BorderLayout.NORTH);
 		
@@ -104,15 +117,23 @@ public class Controleur {
 		this.panel4.add(this.tableBilan.getTableHeader(), BorderLayout.NORTH);
 		this.panel4.add(this.tableBilan, BorderLayout.SOUTH);
 		
-		this.panel3.add(this.panel4);
+		this.panel3.add(this.panel4, BorderLayout.NORTH);
 		
 		this.panel2.add(this.panel3, BorderLayout.CENTER);
 		
+		this.panel6 = new JPanel();
+		this.panel6.setPreferredSize(new Dimension(200,2));
+		this.panel2.add(this.panel6, BorderLayout.EAST);
+		
+		this.panelGauche = new JPanel(new BorderLayout());
+		this.panelGauche.add(this.panel1, BorderLayout.NORTH);
+		this.panelGauche.add(this.tablePortefeuilleScrollPane, BorderLayout.CENTER);
+		this.panelGauche.add(this.panel2, BorderLayout.SOUTH);
+		
+		this.splitPane.setRightComponent(this.panelGauche);
+		
 		Container contentPane = this.fenetrePrincipale.getContentPane();
-		contentPane.setLayout(new BorderLayout());
-		contentPane.add(this.panel1, BorderLayout.NORTH);
-		contentPane.add(this.tablePortefeuilleScrollPane, BorderLayout.CENTER);
-		contentPane.add(this.panel2, BorderLayout.SOUTH);
+		contentPane.add(this.splitPane);
 		
 		this.fenetrePrincipale.setVisible(true);
 	}
