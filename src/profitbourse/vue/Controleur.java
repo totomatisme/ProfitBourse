@@ -1,6 +1,7 @@
 package profitbourse.vue;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -47,6 +48,7 @@ public class Controleur {
 	private LabelPortefeuilleBilan labelPortefeuilleBilan;
 	private JPanel panel3;
 	private JPanel panel4;
+	private JPanel panel5;
 	private ModeleTableBilan modeleTableBilan;
 	private JTable tableBilan;
 	
@@ -82,19 +84,25 @@ public class Controleur {
 		
 		this.panel2 = new JPanel(new BorderLayout());
 		this.panel2.setPreferredSize(new Dimension(100, 70));
+		//this.panel2.setBackground(Color.YELLOW);
 		
+		this.panel5 = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		this.labelPortefeuilleBilan = new LabelPortefeuilleBilan(this);
+		this.panel5.add(this.labelPortefeuilleBilan);
 		
 		this.panel3 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		//this.panel3.setBackground(Color.BLUE);
 		this.modeleTableBilan = new ModeleTableBilan(this);
 		this.tableBilan = new JTable(this.modeleTableBilan);
+		this.tableBilan.setPreferredSize(new Dimension(600,16));
 		
-		this.panel2.add(this.labelPortefeuilleBilan, BorderLayout.NORTH);
+		this.panel2.add(this.panel5, BorderLayout.NORTH);
 		
-		this.panel4 = new JPanel();
-		this.panel4.setPreferredSize(new Dimension(300, 55));
-		this.panel4.add(this.tableBilan.getTableHeader());
-		this.panel4.add(this.tableBilan);
+		this.panel4 = new JPanel(new BorderLayout());
+		//this.panel4.setBackground(Color.RED);
+		//this.panel4.setPreferredSize(new Dimension(600, 50));
+		this.panel4.add(this.tableBilan.getTableHeader(), BorderLayout.NORTH);
+		this.panel4.add(this.tableBilan, BorderLayout.SOUTH);
 		
 		this.panel3.add(this.panel4);
 		
