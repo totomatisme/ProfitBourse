@@ -1,22 +1,22 @@
 package profitbourse.vue;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Insets;
 import java.io.File;
 import java.util.Currency;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Observable;
+import java.util.Observer;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
+import javax.swing.JTree;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.plaf.metal.MetalLookAndFeel;
@@ -26,9 +26,8 @@ import profitbourse.modele.*;
 import profitbourse.modele.Portefeuille.ActionDejaPresenteDansLePortefeuille;
 import profitbourse.modele.preferences.GestionnairePreferences;
 import profitbourse.modele.sauvegarde.GestionnaireSauvegarde;
-import profitbourse.vue.table.DateCellRenderer;
-import profitbourse.vue.table.ModeleTableBilan;
-import profitbourse.vue.table.ModeleTablePortefeuille;
+import profitbourse.vue.table.*;
+import profitbourse.vue.tree.ModeleTreeProjet;
 
 public class Controleur {
 	
@@ -40,7 +39,10 @@ public class Controleur {
 	
 	private JSplitPane splitPane;
 	private JScrollPane scrollPaneGauche;
-	private JPanel panelGauche;
+	private JPanel panelDroit;
+	
+	private ModeleTreeProjet modeleTreeProjet;
+	private JTree treeProjet;
 	
 	private JPanel panel1;
 	private LabelPortefeuilleContenu labelPortefeuilleContenu;
@@ -59,12 +61,16 @@ public class Controleur {
 	private JTable tableBilan;
 	
 	private NotificationChangementDePortefeuilleCourant notificationChangementDePortefeuilleCourant;
+	private NotificationChangementDeProjetCourant notificationChangementDeProjetCourant;
+	private ObservateurSuppressionPortefeuille observateurSuppressionPortefeuille;
 	
 	public Controleur() {
 		this.projetActuel = null;
 		this.portefeuilleActuel = null;
 		this.actionActuelle = null;
 		this.notificationChangementDePortefeuilleCourant = new NotificationChangementDePortefeuilleCourant();
+		this.notificationChangementDeProjetCourant = new NotificationChangementDeProjetCourant();
+		this.observateurSuppressionPortefeuille = new ObservateurSuppressionPortefeuille();
 		
 		this.construireInterface();
 		this.menuPrincipalConsole();
@@ -83,7 +89,9 @@ public class Controleur {
 		this.splitPane.setOneTouchExpandable(true);
 		
 		this.scrollPaneGauche = new JScrollPane();
-		
+		this.modeleTreeProjet = new ModeleTreeProjet(this, null);
+		this.treeProjet = new JTree(this.modeleTreeProjet);
+		this.scrollPaneGauche.setViewportView(this.treeProjet);
 		this.splitPane.setLeftComponent(this.scrollPaneGauche);
 		
 		this.panel1 = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -125,12 +133,12 @@ public class Controleur {
 		this.panel6.setPreferredSize(new Dimension(200,2));
 		this.panel2.add(this.panel6, BorderLayout.EAST);
 		
-		this.panelGauche = new JPanel(new BorderLayout());
-		this.panelGauche.add(this.panel1, BorderLayout.NORTH);
-		this.panelGauche.add(this.tablePortefeuilleScrollPane, BorderLayout.CENTER);
-		this.panelGauche.add(this.panel2, BorderLayout.SOUTH);
+		this.panelDroit = new JPanel(new BorderLayout());
+		this.panelDroit.add(this.panel1, BorderLayout.NORTH);
+		this.panelDroit.add(this.tablePortefeuilleScrollPane, BorderLayout.CENTER);
+		this.panelDroit.add(this.panel2, BorderLayout.SOUTH);
 		
-		this.splitPane.setRightComponent(this.panelGauche);
+		this.splitPane.setRightComponent(this.panelDroit);
 		
 		Container contentPane = this.fenetrePrincipale.getContentPane();
 		contentPane.add(this.splitPane);
@@ -145,6 +153,27 @@ public class Controleur {
 		}
 	}
 	
+	public void changerDeProjetActuel(Projet nouveauProjetActuel) {
+		if (nouveauProjetActuel != this.projetActuel) {
+			if (this.projetActuel != null) {
+				this.projetActuel.getNotificationPortefeuilleSupprime().deleteObserver(this.observateurSuppressionPortefeuille);
+			}
+			this.projetActuel = nouveauProjetActuel;
+			this.changerLeTreeProjet();
+			this.notificationChangementDeProjetCourant.notifierChangementDeProjetCourant(nouveauProjetActuel);
+			if (nouveauProjetActuel != null) {
+				nouveauProjetActuel.getNotificationPortefeuilleSupprime().addObserver(this.observateurSuppressionPortefeuille);
+			}
+		}
+	}
+	
+	public void changerLeTreeProjet() {
+		// On enlève les observateurs qui observe l'ancien projet car ça peut faire une fuite de mémoire.
+		this.modeleTreeProjet.supprimerLesObservateurs();
+		// On change le modèle du JTree.
+		this.treeProjet.setModel(new ModeleTreeProjet(this, this.projetActuel));
+	}
+	
 	public class NotificationChangementDePortefeuilleCourant extends Observable {
 		public void notifierChangementDePortefeuilleCourant(Portefeuille portefeuille) {
 			this.setChanged();
@@ -152,10 +181,30 @@ public class Controleur {
 		}
 	}
 	
+	public class NotificationChangementDeProjetCourant extends Observable {
+		public void notifierChangementDeProjetCourant(Projet projet) {
+			this.setChanged();
+			this.notifyObservers(projet);
+		}
+	}
+	
+	private class ObservateurSuppressionPortefeuille implements Observer {
+		public void update(Observable arg0, Object arg1) {
+			Projet.NotificationPortefeuilleSupprime notificationPortefeuilleSupprime = projetActuel.getNotificationPortefeuilleSupprime();
+			if (notificationPortefeuilleSupprime == arg0) {
+				changerDePortefeuilleActuel(null);
+			}
+		}
+	}
+	
 	// GETTERS et SETTERS
 
 	public NotificationChangementDePortefeuilleCourant getNotificationChangementDePortefeuilleCourant() {
 		return notificationChangementDePortefeuilleCourant;
+	}
+	
+	public NotificationChangementDeProjetCourant getNotificationChangementDeProjetCourant() {
+		return notificationChangementDeProjetCourant;
 	}
 
 	public Projet getProjetActuel() {
@@ -204,7 +253,7 @@ public class Controleur {
 					//System.out.println("BUG DE LA CLASSE Console.java FOURNIE PAR SUPELEC !");
 					nom = Console.lireLigne();
 				}
-				this.projetActuel = new Projet(nom);
+				this.changerDeProjetActuel(new Projet(nom));
 				System.out.println("Le nouveau projet a été créé avec succès.");
 				this.menuProjetConsole();
 				break;
@@ -221,7 +270,7 @@ public class Controleur {
 					chemin = GestionnairePreferences.getCheminSauvegarde().toString();
 				}
 				try {
-					this.projetActuel = GestionnaireSauvegarde.chargerProjetDepuisFichier(new File(chemin));
+					this.changerDeProjetActuel(GestionnaireSauvegarde.chargerProjetDepuisFichier(new File(chemin)));
 					System.out.println("Le nouveau projet a été chargé avec succès.");
 					this.menuProjetConsole();
 				} catch (Exception e) {
@@ -411,6 +460,7 @@ public class Controleur {
 				
 			case 'f':
 				System.out.println("Projet fermé.");
+				this.changerDeProjetActuel(null);
 				this.menuPrincipalConsole();
 				break;
 				

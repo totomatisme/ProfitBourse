@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Observable;
 
 import profitbourse.modele.preferences.GestionnairePreferences;
 import profitbourse.modele.sauvegarde.GestionnaireSauvegarde;
@@ -18,6 +19,8 @@ public class Projet implements Serializable {
 	private boolean modifie;
 	private ArrayList<Portefeuille> portefeuilles;
 	private ArrayList<Indice> indices;
+	private transient NotificationPortefeuilleAjoute notificationPortefeuilleAjoute;
+	private transient NotificationPortefeuilleSupprime notificationPortefeuilleSupprime;
 	
 	public Projet(String nom) {
 		this.nom = nom;
@@ -25,12 +28,17 @@ public class Projet implements Serializable {
 		this.modifie = false;
 		this.portefeuilles = new ArrayList<Portefeuille>();
 		this.indices = new ArrayList<Indice>();
+		this.notificationPortefeuilleAjoute = new NotificationPortefeuilleAjoute();
+		this.notificationPortefeuilleSupprime = new NotificationPortefeuilleSupprime();
 	}
 	
 	/**
 	 * Permet de régler un problème dû à la sérialisation, pour réinitialiser les attributsts "transient".
 	 */
 	public void initialisationApresChargement() {
+		this.notificationPortefeuilleAjoute = new NotificationPortefeuilleAjoute();
+		this.notificationPortefeuilleSupprime = new NotificationPortefeuilleSupprime();
+		
 		// On initialise tous les portefeuilles de ce projet.
 		Iterator<Portefeuille> it = this.getPortefeuilles().iterator();
 		while (it.hasNext()) {
@@ -40,12 +48,17 @@ public class Projet implements Serializable {
 	
 	public void ajouterNouveauPortefeuille(Portefeuille portefeuille) {
 		this.getPortefeuilles().add(portefeuille);
+		int row = this.getPortefeuilles().size() - 1;
+		this.notificationPortefeuilleAjoute.notifierPortefeuilleAjoute(portefeuille, row);
 	}
 	
 	public void supprimerPortefeuille(Portefeuille portefeuille) throws PortefeuilleNonPresentDansLeProjet {
-		boolean valide = this.getPortefeuilles().remove(portefeuille);
-		if (!valide) {
+		int row = this.getPortefeuilles().indexOf(portefeuille);
+		if (row == -1) {
 			throw new PortefeuilleNonPresentDansLeProjet();
+		} else {
+			this.getPortefeuilles().remove(row);
+			this.notificationPortefeuilleSupprime.notifierPortefeuilleSupprime(portefeuille, row);
 		}
 	}
 	
@@ -86,7 +99,8 @@ public class Projet implements Serializable {
 	}
 	
 	public String toString() {
-		return "Projet : '" + this.getNom() + "' enregistré à l'adresse : '" + this.getCheminSauvegarde() + "'.";
+		//return "Projet : '" + this.getNom() + "' enregistré à l'adresse : '" + this.getCheminSauvegarde() + "'.";
+		return this.getNom();
 	}
 	
 	public void enregistrerProjet() throws FileNotFoundException, IOException {
@@ -100,6 +114,34 @@ public class Projet implements Serializable {
 	
 	class IndiceNonPresentDansLeProjet extends Exception {
 		private static final long serialVersionUID = 3209724652088940744L;
+	}
+	
+	public class NotificationPortefeuilleAjoute extends Observable {
+		private int row = 0;
+		
+		public void notifierPortefeuilleAjoute(Portefeuille portefeuilleAjoute, int row) {
+			this.row = row;
+			this.setChanged();
+			this.notifyObservers(portefeuilleAjoute);
+		}
+
+		public int getRow() {
+			return row;
+		}
+	}
+	
+	public class NotificationPortefeuilleSupprime extends Observable {
+		private int row = 0;
+		
+		public void notifierPortefeuilleSupprime(Portefeuille portefeuilleSupprime, int row) {
+			this.row = row;
+			this.setChanged();
+			this.notifyObservers(portefeuilleSupprime);
+		}
+
+		public int getRow() {
+			return row;
+		}
 	}
 
 	// GETTERS et SETTERS
@@ -142,6 +184,14 @@ public class Projet implements Serializable {
 	
 	public static File creerCheminDeSauvegardeParDefaut(String nomProjet) {
 		return new File(GestionnairePreferences.getDossierSauvegarde().toString() + File.separator + nomProjet + ".pb");
+	}
+
+	public NotificationPortefeuilleAjoute getNotificationPortefeuilleAjoute() {
+		return notificationPortefeuilleAjoute;
+	}
+
+	public NotificationPortefeuilleSupprime getNotificationPortefeuilleSupprime() {
+		return notificationPortefeuilleSupprime;
 	}
 
 }

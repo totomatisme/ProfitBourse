@@ -128,8 +128,10 @@ public class Portefeuille implements Serializable {
 	}
 	
 	public String toString() {
-		return "Portefeuille : '" + this.getNom() + "' en " + this.getDevise() + ", prix total à l'achat "
+		/*return "Portefeuille : '" + this.getNom() + "' en " + this.getDevise() + ", prix total à l'achat " 
 				+ this.calculerTotalAchat() + ", prix total actuel " + this.calculerTotalActuel() + ".";
+				*/
+		return this.getNom();
 	}
 	
 	public class ActionNonPresenteDansLePortefeuille extends Exception {
