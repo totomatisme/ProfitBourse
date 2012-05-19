@@ -1,20 +1,23 @@
 package profitbourse.vue;
 
 import javax.swing.JFrame;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.plaf.metal.MetalLookAndFeel;
 
 
 public class FenetrePrincipale extends JFrame {
 
 	private static final long serialVersionUID = -3744789466688086804L;
+	private Controleur controleur;
+	private SplitPanePrincipal splitPanePrincipal;
 
-	public FenetrePrincipale() {
+	public FenetrePrincipale(Controleur controleur) {
 		super("ProfitBourse");
+		this.controleur = controleur;
 		
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setSize(800,300);
+		
+		this.splitPanePrincipal = new SplitPanePrincipal(this.controleur);
+		this.getContentPane().add(this.splitPanePrincipal);
 	}
 	
 }

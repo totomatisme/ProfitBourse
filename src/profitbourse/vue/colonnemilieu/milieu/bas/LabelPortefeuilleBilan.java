@@ -1,4 +1,7 @@
-package profitbourse.vue;
+package profitbourse.vue.colonnemilieu.milieu.bas;
+
+import profitbourse.vue.Controleur;
+import profitbourse.vue.colonnemilieu.milieu.AbstractLabelPortefeuille;
 
 public class LabelPortefeuilleBilan extends AbstractLabelPortefeuille {
 	

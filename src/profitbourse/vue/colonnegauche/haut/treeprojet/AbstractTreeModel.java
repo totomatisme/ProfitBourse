@@ -1,6 +1,7 @@
-package profitbourse.vue.tree;
+package profitbourse.vue.colonnegauche.haut.treeprojet;
 
 import javax.swing.tree.TreeModel;
+
 
 //This class takes care of the event listener lists required by TreeModel.
 //It also adds "fire" methods that call the methods in TreeModelListener.

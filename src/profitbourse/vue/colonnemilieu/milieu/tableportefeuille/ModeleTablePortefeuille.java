@@ -1,4 +1,4 @@
-package profitbourse.vue.table;
+package profitbourse.vue.colonnemilieu.milieu.tableportefeuille;
 
 import java.util.ArrayList;
 import java.util.Date;

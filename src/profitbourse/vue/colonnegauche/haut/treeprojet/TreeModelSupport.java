@@ -1,4 +1,4 @@
-package profitbourse.vue.tree;
+package profitbourse.vue.colonnegauche.haut.treeprojet;
 
 import javax.swing.event.*;
 import java.util.*;

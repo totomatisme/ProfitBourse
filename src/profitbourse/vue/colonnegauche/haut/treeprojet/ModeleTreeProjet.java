@@ -1,4 +1,4 @@
-package profitbourse.vue.tree;
+package profitbourse.vue.colonnegauche.haut.treeprojet;
 
 import java.util.Observable;
 import java.util.Observer;

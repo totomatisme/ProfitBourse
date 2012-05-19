@@ -1,4 +1,4 @@
-package profitbourse.vue.table;
+package profitbourse.vue.colonnemilieu.milieu.bas.tablebilan;
 
 import java.util.ArrayList;
 import java.util.Observable;

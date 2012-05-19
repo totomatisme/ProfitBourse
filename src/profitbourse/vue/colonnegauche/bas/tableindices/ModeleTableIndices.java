@@ -1,4 +1,4 @@
-package profitbourse.vue.table;
+package profitbourse.vue.colonnegauche.bas.tableindices;
 
 import java.util.ArrayList;
 import java.util.Observable;

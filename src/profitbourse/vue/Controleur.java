@@ -1,22 +1,12 @@
 package profitbourse.vue;
 
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.io.File;
 import java.util.Currency;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Observable;
 import java.util.Observer;
 
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTable;
-import javax.swing.JTree;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.plaf.metal.MetalLookAndFeel;
@@ -26,8 +16,6 @@ import profitbourse.modele.*;
 import profitbourse.modele.Portefeuille.ActionDejaPresenteDansLePortefeuille;
 import profitbourse.modele.preferences.GestionnairePreferences;
 import profitbourse.modele.sauvegarde.GestionnaireSauvegarde;
-import profitbourse.vue.table.*;
-import profitbourse.vue.tree.ModeleTreeProjet;
 
 public class Controleur {
 	
@@ -36,34 +24,6 @@ public class Controleur {
 	private Action actionActuelle;
 	
 	private FenetrePrincipale fenetrePrincipale;
-	
-	private JSplitPane splitPane;
-	private JScrollPane scrollPaneGauche1;
-	private JPanel panelDroit;
-	
-	private JSplitPane splitPaneGauche;
-	private JScrollPane scrollPaneGauche2;
-	private ModeleTableIndices modeleTableIndices;
-	private JTable tableIndices;
-	
-	private ModeleTreeProjet modeleTreeProjet;
-	private JTree treeProjet;
-	
-	private JPanel panel1;
-	private LabelPortefeuilleContenu labelPortefeuilleContenu;
-	
-	private ModeleTablePortefeuille modeleTablePortefeuille;
-	private JTable tablePortefeuille;
-	private JScrollPane tablePortefeuilleScrollPane;
-	
-	private JPanel panel2;
-	private LabelPortefeuilleBilan labelPortefeuilleBilan;
-	private JPanel panel3;
-	private JPanel panel4;
-	private JPanel panel5;
-	private JPanel panel6;
-	private ModeleTableBilan modeleTableBilan;
-	private JTable tableBilan;
 	
 	private NotificationChangementDePortefeuilleCourant notificationChangementDePortefeuilleCourant;
 	private NotificationChangementDeProjetCourant notificationChangementDeProjetCourant;
@@ -83,81 +43,14 @@ public class Controleur {
 	
 	private void construireInterface() {
 		Locale.setDefault(Locale.FRANCE);
+		
 		try {
 			UIManager.setLookAndFeel(new MetalLookAndFeel());
 		} catch (UnsupportedLookAndFeelException e) {
 			e.printStackTrace();
 		}
-		this.fenetrePrincipale = new FenetrePrincipale();
 		
-		this.splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-		this.splitPane.setOneTouchExpandable(true);
-		
-		this.scrollPaneGauche1 = new JScrollPane();
-		this.modeleTreeProjet = new ModeleTreeProjet(this, null);
-		this.treeProjet = new JTree(this.modeleTreeProjet);
-		this.scrollPaneGauche1.setViewportView(this.treeProjet);
-		
-		this.splitPaneGauche = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-		this.splitPaneGauche.setOneTouchExpandable(true);
-		this.modeleTableIndices = new ModeleTableIndices(this);
-		this.tableIndices = new JTable(this.modeleTableIndices);
-		this.scrollPaneGauche2 = new JScrollPane(this.tableIndices);
-		
-		this.splitPaneGauche.setTopComponent(this.scrollPaneGauche1);
-		this.splitPaneGauche.setBottomComponent(this.scrollPaneGauche2);
-		
-		this.splitPane.setLeftComponent(this.splitPaneGauche);
-		
-		this.panel1 = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		this.labelPortefeuilleContenu = new LabelPortefeuilleContenu(this);
-		this.panel1.add(this.labelPortefeuilleContenu);
-		
-		this.modeleTablePortefeuille = new ModeleTablePortefeuille(this);
-		this.tablePortefeuille = new JTable(this.modeleTablePortefeuille);
-		this.tablePortefeuille.setDefaultRenderer(Date.class, new DateCellRenderer());
-		this.tablePortefeuilleScrollPane = new JScrollPane(this.tablePortefeuille);
-		
-		this.panel2 = new JPanel(new BorderLayout());
-		this.panel2.setPreferredSize(new Dimension(100, 70));
-		//this.panel2.setBackground(Color.YELLOW);
-		
-		this.panel5 = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		this.labelPortefeuilleBilan = new LabelPortefeuilleBilan(this);
-		this.panel5.add(this.labelPortefeuilleBilan);
-		
-		this.panel3 = new JPanel(new BorderLayout());
-		//this.panel3.setBackground(Color.BLUE);
-		this.modeleTableBilan = new ModeleTableBilan(this);
-		this.tableBilan = new JTable(this.modeleTableBilan);
-		//this.tableBilan.setPreferredSize(new Dimension(600,16));
-		
-		this.panel2.add(this.panel5, BorderLayout.NORTH);
-		
-		this.panel4 = new JPanel(new BorderLayout());
-		//this.panel4.setBackground(Color.RED);
-		//this.panel4.setPreferredSize(new Dimension(600, 50));
-		this.panel4.add(this.tableBilan.getTableHeader(), BorderLayout.NORTH);
-		this.panel4.add(this.tableBilan, BorderLayout.SOUTH);
-		
-		this.panel3.add(this.panel4, BorderLayout.NORTH);
-		
-		this.panel2.add(this.panel3, BorderLayout.CENTER);
-		
-		this.panel6 = new JPanel();
-		this.panel6.setPreferredSize(new Dimension(200,2));
-		this.panel2.add(this.panel6, BorderLayout.EAST);
-		
-		this.panelDroit = new JPanel(new BorderLayout());
-		this.panelDroit.add(this.panel1, BorderLayout.NORTH);
-		this.panelDroit.add(this.tablePortefeuilleScrollPane, BorderLayout.CENTER);
-		this.panelDroit.add(this.panel2, BorderLayout.SOUTH);
-		
-		this.splitPane.setRightComponent(this.panelDroit);
-		
-		Container contentPane = this.fenetrePrincipale.getContentPane();
-		contentPane.add(this.splitPane);
-		
+		this.fenetrePrincipale = new FenetrePrincipale(this);
 		this.fenetrePrincipale.setVisible(true);
 	}
 	
@@ -174,20 +67,12 @@ public class Controleur {
 				this.projetActuel.getNotificationPortefeuilleSupprime().deleteObserver(this.observateurSuppressionPortefeuille);
 			}
 			this.projetActuel = nouveauProjetActuel;
-			this.changerLeTreeProjet();
 			this.changerDePortefeuilleActuel(null);
 			this.notificationChangementDeProjetCourant.notifierChangementDeProjetCourant(nouveauProjetActuel);
 			if (nouveauProjetActuel != null) {
 				nouveauProjetActuel.getNotificationPortefeuilleSupprime().addObserver(this.observateurSuppressionPortefeuille);
 			}
 		}
-	}
-	
-	public void changerLeTreeProjet() {
-		// On enlève les observateurs qui observe l'ancien projet car ça peut faire une fuite de mémoire.
-		this.modeleTreeProjet.supprimerLesObservateurs();
-		// On change le modèle du JTree.
-		this.treeProjet.setModel(new ModeleTreeProjet(this, this.projetActuel));
 	}
 	
 	public class NotificationChangementDePortefeuilleCourant extends Observable {
