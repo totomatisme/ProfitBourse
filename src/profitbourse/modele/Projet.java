@@ -137,11 +137,11 @@ public class Projet implements Serializable {
 		GestionnairePreferences.setCheminSauvegarde(this.getCheminSauvegarde());
 	}
 	
-	class PortefeuilleNonPresentDansLeProjet extends Exception {
+	public class PortefeuilleNonPresentDansLeProjet extends Exception {
 		private static final long serialVersionUID = 3510456719637459437L;
 	}
 	
-	class IndiceNonPresentDansLeProjet extends Exception {
+	public class IndiceNonPresentDansLeProjet extends Exception {
 		private static final long serialVersionUID = 3209724652088940744L;
 	}
 	

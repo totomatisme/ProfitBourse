@@ -16,6 +16,7 @@ public class SplitPaneColonneGauche extends JSplitPane {
 	public SplitPaneColonneGauche(Controleur controleur) {
 		super(JSplitPane.VERTICAL_SPLIT);
 		this.controleur = controleur;
+		this.setResizeWeight(0.5);
 		this.setOneTouchExpandable(true);
 		
 		this.panelColonneGaucheBas = new PanelColonneGaucheBas(controleur);

@@ -1,5 +1,6 @@
 package profitbourse.vue;
 
+import java.awt.event.ActionEvent;
 import java.io.File;
 import java.util.Currency;
 import java.util.Iterator;
@@ -7,6 +8,8 @@ import java.util.Locale;
 import java.util.Observable;
 import java.util.Observer;
 
+import javax.swing.AbstractAction;
+import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.plaf.metal.MetalLookAndFeel;
@@ -14,6 +17,8 @@ import javax.swing.plaf.metal.MetalLookAndFeel;
 import profitbourse.Console;
 import profitbourse.modele.*;
 import profitbourse.modele.Portefeuille.ActionDejaPresenteDansLePortefeuille;
+import profitbourse.modele.Projet.IndiceNonPresentDansLeProjet;
+import profitbourse.modele.Projet.PortefeuilleNonPresentDansLeProjet;
 import profitbourse.modele.preferences.GestionnairePreferences;
 import profitbourse.modele.sauvegarde.GestionnaireSauvegarde;
 
@@ -22,12 +27,26 @@ public class Controleur {
 	private Projet projetActuel;
 	private Portefeuille portefeuilleActuel;
 	private Action actionActuelle;
+	private Indice indiceActuel;
 	
 	private FenetrePrincipale fenetrePrincipale;
 	
 	private NotificationChangementDePortefeuilleCourant notificationChangementDePortefeuilleCourant;
 	private NotificationChangementDeProjetCourant notificationChangementDeProjetCourant;
+	private NotificationChangementIndiceCourant notificationChangementIndiceCourant;
+	private NotificationChangementActionCourante notificationChangementActionCourante;
+	
 	private ObservateurSuppressionPortefeuille observateurSuppressionPortefeuille;
+	private ObservateurSuppressionIndice observateurSuppressionIndice;
+	private ObservateurSuppressionAction observateurSuppressionAction;
+	
+	public DemandeAjoutPortefeuille demandeAjoutPortefeuille;
+	public DemandeSuppressionPortefeuille demandeSuppressionPortefeuille;
+	public DemandeAjoutIndice demandeAjoutIndice;
+	public DemandeSuppressionIndice demandeSuppressionIndice;
+	public DemandeAjoutAction demandeAjoutAction;
+	public DemandeSuppressionAction demandeSuppressionAction;
+	public DemandeMajPortefeuille demandeMajPortefeuille;
 	
 	public Controleur() {
 		this.projetActuel = null;
@@ -35,10 +54,28 @@ public class Controleur {
 		this.actionActuelle = null;
 		this.notificationChangementDePortefeuilleCourant = new NotificationChangementDePortefeuilleCourant();
 		this.notificationChangementDeProjetCourant = new NotificationChangementDeProjetCourant();
+		this.notificationChangementIndiceCourant = new NotificationChangementIndiceCourant();
+		this.notificationChangementActionCourante = new NotificationChangementActionCourante();
 		this.observateurSuppressionPortefeuille = new ObservateurSuppressionPortefeuille();
+		this.observateurSuppressionIndice = new ObservateurSuppressionIndice();
+		this.observateurSuppressionAction = new ObservateurSuppressionAction();
 		
+		// Il faut créer les objets demandes (AbstractAction) avant l'interface.
+		this.creerDemandes();
+		// On crée l'interface.
 		this.construireInterface();
+		// On lance le mode condole.
 		this.menuPrincipalConsole();
+	}
+	
+	public void creerDemandes() {
+		this.demandeAjoutPortefeuille = new DemandeAjoutPortefeuille();
+		this.demandeSuppressionPortefeuille = new DemandeSuppressionPortefeuille();
+		this.demandeSuppressionIndice = new DemandeSuppressionIndice();
+		this.demandeAjoutIndice = new DemandeAjoutIndice();
+		this.demandeAjoutAction = new DemandeAjoutAction();
+		this.demandeSuppressionAction = new DemandeSuppressionAction();
+		this.demandeMajPortefeuille = new DemandeMajPortefeuille();
 	}
 	
 	private void construireInterface() {
@@ -56,8 +93,14 @@ public class Controleur {
 	
 	public void changerDePortefeuilleActuel(Portefeuille nouveauPortefeuilleActuel) {
 		if (nouveauPortefeuilleActuel != this.portefeuilleActuel) {
+			if (this.portefeuilleActuel != null) {
+				this.portefeuilleActuel.getNotificationActionSupprimee().deleteObserver(this.observateurSuppressionAction);
+			}
 			this.portefeuilleActuel = nouveauPortefeuilleActuel;
 			this.notificationChangementDePortefeuilleCourant.notifierChangementDePortefeuilleCourant(nouveauPortefeuilleActuel);
+			if (nouveauPortefeuilleActuel != null) {
+				nouveauPortefeuilleActuel.getNotificationActionSupprimee().addObserver(this.observateurSuppressionAction);
+			}
 		}
 	}
 	
@@ -65,15 +108,230 @@ public class Controleur {
 		if (nouveauProjetActuel != this.projetActuel) {
 			if (this.projetActuel != null) {
 				this.projetActuel.getNotificationPortefeuilleSupprime().deleteObserver(this.observateurSuppressionPortefeuille);
+				this.projetActuel.getNotificationIndiceSupprime().deleteObserver(this.observateurSuppressionIndice);
 			}
 			this.projetActuel = nouveauProjetActuel;
 			this.changerDePortefeuilleActuel(null);
 			this.notificationChangementDeProjetCourant.notifierChangementDeProjetCourant(nouveauProjetActuel);
 			if (nouveauProjetActuel != null) {
 				nouveauProjetActuel.getNotificationPortefeuilleSupprime().addObserver(this.observateurSuppressionPortefeuille);
+				nouveauProjetActuel.getNotificationIndiceSupprime().addObserver(this.observateurSuppressionIndice);
 			}
 		}
 	}
+	
+	public void changerActionActuelle(Action nouvelleAction) {
+		if (nouvelleAction != this.actionActuelle) {
+			this.actionActuelle = nouvelleAction;
+			this.notificationChangementActionCourante.notifierChangementActionCourante(nouvelleAction);
+		}
+	}
+	
+	public void changerIndiceActuel(Indice nouveauIndice) {
+		if (nouveauIndice != this.indiceActuel) {
+			this.indiceActuel = nouveauIndice;
+			this.notificationChangementIndiceCourant.notifierChangementIndiceCourant(nouveauIndice);
+		}
+	}
+	
+	// DEMANDES
+	
+	public class DemandeAjoutPortefeuille extends AbstractAction {
+		private static final long serialVersionUID = 5344664511671140567L;
+		private ObservateurChangementDeProjetCourant observateurChangementDeProjetCourant;
+		public DemandeAjoutPortefeuille() {
+			super("Nouveau");
+			this.setEnabled(false);
+			this.observateurChangementDeProjetCourant = new ObservateurChangementDeProjetCourant();
+			getNotificationChangementDeProjetCourant().addObserver(this.observateurChangementDeProjetCourant);
+		}
+		public void actionPerformed(ActionEvent arg0) {
+			
+		}
+		private class ObservateurChangementDeProjetCourant implements Observer {
+			public void update(Observable arg0, Object arg1) {
+				Projet projet = (Projet)arg1;
+				if (projet == null) {
+					setEnabled(false);
+				} else {
+					setEnabled(true);
+				}
+			}
+		}
+	}
+	
+	public class DemandeSuppressionPortefeuille extends AbstractAction {
+		private static final long serialVersionUID = 8277988356034862586L;
+		private ObservateurChangementDePortefeuilleCourant observateurChangementDePortefeuilleCourant;
+		public DemandeSuppressionPortefeuille() {
+			super("Supprimer");
+			this.setEnabled(false);
+			this.observateurChangementDePortefeuilleCourant = new ObservateurChangementDePortefeuilleCourant();
+			getNotificationChangementDePortefeuilleCourant().addObserver(this.observateurChangementDePortefeuilleCourant);
+		}
+		public void actionPerformed(ActionEvent arg0) {
+			int reponse = JOptionPane.showConfirmDialog(
+					fenetrePrincipale,
+					"Voulez-vous vraiment supprimer le portefeuille '" + portefeuilleActuel + "' ?",
+					"Suppression du portefeuille",
+					JOptionPane.OK_CANCEL_OPTION,
+					JOptionPane.WARNING_MESSAGE);
+			if (reponse == JOptionPane.OK_OPTION) {
+				try {
+					projetActuel.supprimerPortefeuille(portefeuilleActuel);
+				} catch (PortefeuilleNonPresentDansLeProjet e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		private class ObservateurChangementDePortefeuilleCourant implements Observer {
+			public void update(Observable arg0, Object arg1) {
+				Portefeuille nouveauPortefeuille = (Portefeuille)arg1;
+				if (nouveauPortefeuille == null) {
+					setEnabled(false);
+				} else {
+					setEnabled(true);
+				}
+			}
+		}
+	}
+	
+	public class DemandeAjoutIndice extends AbstractAction {
+		private static final long serialVersionUID = 5797334510689354761L;
+		private ObservateurChangementDeProjetCourant observateurChangementDeProjetCourant;
+		public DemandeAjoutIndice() {
+			super("Ajouter");
+			this.setEnabled(false);
+			this.observateurChangementDeProjetCourant = new ObservateurChangementDeProjetCourant();
+			getNotificationChangementDeProjetCourant().addObserver(this.observateurChangementDeProjetCourant);
+		}
+		public void actionPerformed(ActionEvent arg0) {
+			
+		}
+		private class ObservateurChangementDeProjetCourant implements Observer {
+			public void update(Observable arg0, Object arg1) {
+				Projet projet = (Projet)arg1;
+				if (projet == null) {
+					setEnabled(false);
+				} else {
+					setEnabled(true);
+				}
+			}
+		}
+	}
+	
+	public class DemandeSuppressionIndice extends AbstractAction {
+		private static final long serialVersionUID = 3819324356745444614L;
+		private ObservateurChangementIndiceCourant observateurChangementIndiceCourant;
+		public DemandeSuppressionIndice() {
+			super("Supprimer");
+			this.setEnabled(false);
+			this.observateurChangementIndiceCourant = new ObservateurChangementIndiceCourant();
+			getNotificationChangementIndiceCourant().addObserver(this.observateurChangementIndiceCourant);
+		}
+		public void actionPerformed(ActionEvent arg0) {
+			int reponse = JOptionPane.showConfirmDialog(
+					fenetrePrincipale,
+					"Voulez-vous vraiment supprimer l'indice '" + indiceActuel + "' ?",
+					"Suppression de l'indice",
+					JOptionPane.OK_CANCEL_OPTION,
+					JOptionPane.WARNING_MESSAGE);
+			if (reponse == JOptionPane.OK_OPTION) {
+				try {
+					projetActuel.supprimerIndice(indiceActuel);
+				} catch (IndiceNonPresentDansLeProjet e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		private class ObservateurChangementIndiceCourant implements Observer {
+			public void update(Observable arg0, Object arg1) {
+				Indice nouvelIndice = (Indice)arg1;
+				if (nouvelIndice == null) {
+					setEnabled(false);
+				} else {
+					setEnabled(true);
+				}
+			}
+		}
+	}
+	
+	public class DemandeAjoutAction extends AbstractAction {
+		private static final long serialVersionUID = -3297108071447422004L;
+		private ObservateurChangementDePortefeuilleCourant observateurChangementDePortefeuilleCourant;
+		public DemandeAjoutAction() {
+			super("Ajouter une action");
+			this.setEnabled(false);
+			this.observateurChangementDePortefeuilleCourant = new ObservateurChangementDePortefeuilleCourant();
+			getNotificationChangementDePortefeuilleCourant().addObserver(this.observateurChangementDePortefeuilleCourant);
+		}
+		public void actionPerformed(ActionEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+		private class ObservateurChangementDePortefeuilleCourant implements Observer {
+			public void update(Observable arg0, Object arg1) {
+				Portefeuille nouveauPortefeuille = (Portefeuille)arg1;
+				if (nouveauPortefeuille == null) {
+					setEnabled(false);
+				} else {
+					setEnabled(true);
+				}
+			}
+		}
+	}
+	
+	public class DemandeSuppressionAction extends AbstractAction {
+		private static final long serialVersionUID = 5101785260195517184L;
+		private ObservateurChangementActionCourante observateurChangementActionCourante;
+		public DemandeSuppressionAction() {
+			super("Supprimer l'action");
+			this.setEnabled(false);
+			this.observateurChangementActionCourante = new ObservateurChangementActionCourante();
+			getNotificationChangementActionCourante().addObserver(this.observateurChangementActionCourante);
+		}
+		public void actionPerformed(ActionEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+		private class ObservateurChangementActionCourante implements Observer {
+			public void update(Observable arg0, Object arg1) {
+				Action nouvelleAction = (Action)arg1;
+				if (nouvelleAction == null) {
+					setEnabled(false);
+				} else {
+					setEnabled(true);
+				}
+			}
+		}
+	}
+	
+	public class DemandeMajPortefeuille extends AbstractAction {
+		private static final long serialVersionUID = 8981374659617983314L;
+		private ObservateurChangementDePortefeuilleCourant observateurChangementDePortefeuilleCourant;
+		public DemandeMajPortefeuille() {
+			super("Mise à jour Web");
+			this.setEnabled(false);
+			this.observateurChangementDePortefeuilleCourant = new ObservateurChangementDePortefeuilleCourant();
+			getNotificationChangementDePortefeuilleCourant().addObserver(this.observateurChangementDePortefeuilleCourant);
+		}
+		public void actionPerformed(ActionEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+		private class ObservateurChangementDePortefeuilleCourant implements Observer {
+			public void update(Observable arg0, Object arg1) {
+				Portefeuille nouveauPortefeuille = (Portefeuille)arg1;
+				if (nouveauPortefeuille == null) {
+					setEnabled(false);
+				} else {
+					setEnabled(true);
+				}
+			}
+		}
+	}
+	
+	// OBSERVEURS ET NOTIFIEURS
 	
 	public class NotificationChangementDePortefeuilleCourant extends Observable {
 		public void notifierChangementDePortefeuilleCourant(Portefeuille portefeuille) {
@@ -89,11 +347,43 @@ public class Controleur {
 		}
 	}
 	
+	public class NotificationChangementIndiceCourant extends Observable {
+		public void notifierChangementIndiceCourant(Indice indice) {
+			this.setChanged();
+			this.notifyObservers(indice);
+		}
+	}
+	
+	public class NotificationChangementActionCourante extends Observable {
+		public void notifierChangementActionCourante(Action action) {
+			this.setChanged();
+			this.notifyObservers(action);
+		}
+	}
+	
 	private class ObservateurSuppressionPortefeuille implements Observer {
 		public void update(Observable arg0, Object arg1) {
 			Projet.NotificationPortefeuilleSupprime notificationPortefeuilleSupprime = projetActuel.getNotificationPortefeuilleSupprime();
 			if (notificationPortefeuilleSupprime == arg0) {
 				changerDePortefeuilleActuel(null);
+			}
+		}
+	}
+	
+	private class ObservateurSuppressionIndice implements Observer {
+		public void update(Observable arg0, Object arg1) {
+			Projet.NotificationIndiceSupprime notificationIndiceSupprime = projetActuel.getNotificationIndiceSupprime();
+			if (notificationIndiceSupprime == arg0) {
+				changerIndiceActuel(null);
+			}
+		}
+	}
+	
+	private class ObservateurSuppressionAction implements Observer {
+		public void update(Observable arg0, Object arg1) {
+			Portefeuille.NotificationActionSupprimee notificationActionSupprimee = portefeuilleActuel.getNotificationActionSupprimee();
+			if (notificationActionSupprimee == arg0) {
+				changerActionActuelle(null);
 			}
 		}
 	}
@@ -106,6 +396,14 @@ public class Controleur {
 	
 	public NotificationChangementDeProjetCourant getNotificationChangementDeProjetCourant() {
 		return notificationChangementDeProjetCourant;
+	}
+
+	public NotificationChangementIndiceCourant getNotificationChangementIndiceCourant() {
+		return notificationChangementIndiceCourant;
+	}
+
+	public NotificationChangementActionCourante getNotificationChangementActionCourante() {
+		return notificationChangementActionCourante;
 	}
 
 	public Projet getProjetActuel() {

@@ -44,8 +44,9 @@ public class Indice implements Serializable {
 	}
 	
 	public String toString() {
-		return "Indice : '" + this.getNom() + "', '" + this.getCode() + "', cours : " + this.getCours() 
-				+ " pts (variation " + this.getVariation() + ").";
+		/*return "Indice : '" + this.getNom() + "', '" + this.getCode() + "', cours : " + this.getCours() 
+				+ " pts (variation " + this.getVariation() + ").";*/
+		return this.getNom();
 	}
 	
 	public class NotificationModificationIndice extends Observable {
