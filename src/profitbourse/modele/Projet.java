@@ -1,8 +1,6 @@
 package profitbourse.modele;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -11,13 +9,12 @@ import java.util.Observer;
 
 import profitbourse.modele.majaleatoire.GestionnaireMajWeb;
 import profitbourse.modele.preferences.GestionnairePreferences;
-import profitbourse.modele.sauvegarde.GestionnaireSauvegarde;
 
 public class Projet implements Serializable {
 	
 	private static final long serialVersionUID = -2605790945339106666L;
 	private String nom;
-	private File cheminSauvegarde;
+	private File fichierSauvegarde;
 	private boolean modifie;
 	private ArrayList<Portefeuille> portefeuilles;
 	private ArrayList<Indice> indices;
@@ -31,7 +28,7 @@ public class Projet implements Serializable {
 	
 	public Projet(String nom) {
 		this.nom = nom;
-		this.cheminSauvegarde = Projet.creerCheminDeSauvegardeParDefaut(nom);
+		this.fichierSauvegarde = Projet.creerCheminDeSauvegardeParDefaut(nom);
 		this.modifie = false;
 		this.portefeuilles = new ArrayList<Portefeuille>();
 		this.indices = new ArrayList<Indice>();
@@ -229,12 +226,16 @@ public class Projet implements Serializable {
 
 	// GETTERS et SETTERS
 	
-	public File getCheminSauvegarde() {
-		return cheminSauvegarde;
+	public File getFichierSauvegarde() {
+		return fichierSauvegarde;
 	}
 
-	public void setCheminSauvegarde(File cheminSauvegarde) {
-		this.cheminSauvegarde = cheminSauvegarde;
+	public void setFichierSauvegarde(File cheminSauvegarde) {
+		this.fichierSauvegarde = cheminSauvegarde;
+	}
+	
+	public File getDossierSauvegarde() {
+		return this.fichierSauvegarde.getParentFile();
 	}
 
 	public ArrayList<Portefeuille> getPortefeuilles() {
