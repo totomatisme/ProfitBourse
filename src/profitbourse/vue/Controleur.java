@@ -2,6 +2,8 @@ package profitbourse.vue;
 
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Currency;
 import java.util.Iterator;
 import java.util.Locale;
@@ -9,6 +11,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.AbstractAction;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -17,10 +20,13 @@ import javax.swing.plaf.metal.MetalLookAndFeel;
 import profitbourse.Console;
 import profitbourse.modele.*;
 import profitbourse.modele.Portefeuille.ActionDejaPresenteDansLePortefeuille;
+import profitbourse.modele.Portefeuille.ActionNonPresenteDansLePortefeuille;
 import profitbourse.modele.Projet.IndiceNonPresentDansLeProjet;
 import profitbourse.modele.Projet.PortefeuilleNonPresentDansLeProjet;
 import profitbourse.modele.preferences.GestionnairePreferences;
 import profitbourse.modele.sauvegarde.GestionnaireSauvegarde;
+import profitbourse.vue.barredemenu.BarreDeMenu;
+import profitbourse.vue.dialog.DialogNouveauProjet;
 
 public class Controleur {
 	
@@ -30,6 +36,7 @@ public class Controleur {
 	private Indice indiceActuel;
 	
 	private FenetrePrincipale fenetrePrincipale;
+	private BarreDeMenu barreDeMenu;
 	
 	private NotificationChangementDePortefeuilleCourant notificationChangementDePortefeuilleCourant;
 	private NotificationChangementDeProjetCourant notificationChangementDeProjetCourant;
@@ -47,6 +54,12 @@ public class Controleur {
 	public DemandeAjoutAction demandeAjoutAction;
 	public DemandeSuppressionAction demandeSuppressionAction;
 	public DemandeMajPortefeuille demandeMajPortefeuille;
+	public DemandeNouveauProjet demandeNouveauProjet;
+	public DemandeChargerProjet demandeChargerProjet;
+	public DemandeChargerDernierProjet demandeChargerDernierProjet;
+	public DemandeEnregistrerProjet demandeEnregistrerProjet;
+	public DemandeEnregistrerProjetSous demandeEnregistrerProjetSous;
+	public DemandeFermerProjet demandeFermerProjet;
 	
 	public Controleur() {
 		this.projetActuel = null;
@@ -76,6 +89,12 @@ public class Controleur {
 		this.demandeAjoutAction = new DemandeAjoutAction();
 		this.demandeSuppressionAction = new DemandeSuppressionAction();
 		this.demandeMajPortefeuille = new DemandeMajPortefeuille();
+		this.demandeNouveauProjet = new DemandeNouveauProjet();
+		this.demandeChargerProjet = new DemandeChargerProjet();
+		this.demandeChargerDernierProjet = new DemandeChargerDernierProjet();
+		this.demandeEnregistrerProjet = new DemandeEnregistrerProjet();
+		this.demandeEnregistrerProjetSous = new DemandeEnregistrerProjetSous();
+		this.demandeFermerProjet = new DemandeFermerProjet();
 	}
 	
 	private void construireInterface() {
@@ -88,6 +107,10 @@ public class Controleur {
 		}
 		
 		this.fenetrePrincipale = new FenetrePrincipale(this);
+		
+		this.barreDeMenu = new BarreDeMenu(this);
+		this.fenetrePrincipale.setJMenuBar(this.barreDeMenu);
+		
 		this.fenetrePrincipale.setVisible(true);
 	}
 	
@@ -97,6 +120,7 @@ public class Controleur {
 				this.portefeuilleActuel.getNotificationActionSupprimee().deleteObserver(this.observateurSuppressionAction);
 			}
 			this.portefeuilleActuel = nouveauPortefeuilleActuel;
+			this.changerActionActuelle(null);
 			this.notificationChangementDePortefeuilleCourant.notifierChangementDePortefeuilleCourant(nouveauPortefeuilleActuel);
 			if (nouveauPortefeuilleActuel != null) {
 				nouveauPortefeuilleActuel.getNotificationActionSupprimee().addObserver(this.observateurSuppressionAction);
@@ -112,6 +136,7 @@ public class Controleur {
 			}
 			this.projetActuel = nouveauProjetActuel;
 			this.changerDePortefeuilleActuel(null);
+			this.changerIndiceActuel(null);
 			this.notificationChangementDeProjetCourant.notifierChangementDeProjetCourant(nouveauProjetActuel);
 			if (nouveauProjetActuel != null) {
 				nouveauProjetActuel.getNotificationPortefeuilleSupprime().addObserver(this.observateurSuppressionPortefeuille);
@@ -132,6 +157,50 @@ public class Controleur {
 			this.indiceActuel = nouveauIndice;
 			this.notificationChangementIndiceCourant.notifierChangementIndiceCourant(nouveauIndice);
 		}
+	}
+	
+	public boolean enregistrerProjetActuel() {
+		try {
+			GestionnaireSauvegarde.enregistrerProjet(this.projetActuel, this.projetActuel.getCheminSauvegarde());
+			GestionnairePreferences.setFichierSauvegarde(this.projetActuel.getCheminSauvegarde());
+			GestionnairePreferences.setDernierProjetExiste(true);
+			JOptionPane.showMessageDialog(
+					fenetrePrincipale, 
+					"Le projet a bien été enregistré à l'adresse : '" + this.projetActuel.getCheminSauvegarde() + "'.",
+					"Projet enregistré",
+					JOptionPane.INFORMATION_MESSAGE);
+			return true;
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		JOptionPane.showMessageDialog(
+				fenetrePrincipale, 
+				"Erreur lors de l'enregistrement du projet à l'adresse : '" + this.projetActuel.getCheminSauvegarde() + "'.",
+				"Erreur !",
+				JOptionPane.ERROR_MESSAGE);
+		return false;
+	}
+	
+	public boolean chargerUnAutreProjet(File fichierProjet) {
+		try {
+			Projet nouveauProjet = GestionnaireSauvegarde.chargerProjetDepuisFichier(fichierProjet);
+			this.changerDeProjetActuel(nouveauProjet);
+			return true;
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		JOptionPane.showMessageDialog(
+				fenetrePrincipale, 
+				"Erreur lors du chargement du projet à l'adresse : '" + fichierProjet + "'.",
+				"Erreur !",
+				JOptionPane.ERROR_MESSAGE);
+		return false;
 	}
 	
 	// DEMANDES
@@ -291,8 +360,19 @@ public class Controleur {
 			getNotificationChangementActionCourante().addObserver(this.observateurChangementActionCourante);
 		}
 		public void actionPerformed(ActionEvent arg0) {
-			// TODO Auto-generated method stub
-			
+			int reponse = JOptionPane.showConfirmDialog(
+					fenetrePrincipale,
+					"Voulez-vous vraiment supprimer l'action '" + actionActuelle + "' ?",
+					"Suppression de l'action",
+					JOptionPane.OK_CANCEL_OPTION,
+					JOptionPane.WARNING_MESSAGE);
+			if (reponse == JOptionPane.OK_OPTION) {
+				try {
+					portefeuilleActuel.supprimerTotalementAction(actionActuelle);
+				} catch (ActionNonPresenteDansLePortefeuille e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		private class ObservateurChangementActionCourante implements Observer {
 			public void update(Observable arg0, Object arg1) {
@@ -316,8 +396,7 @@ public class Controleur {
 			getNotificationChangementDePortefeuilleCourant().addObserver(this.observateurChangementDePortefeuilleCourant);
 		}
 		public void actionPerformed(ActionEvent arg0) {
-			// TODO Auto-generated method stub
-			
+			portefeuilleActuel.majToutesLesActions();
 		}
 		private class ObservateurChangementDePortefeuilleCourant implements Observer {
 			public void update(Observable arg0, Object arg1) {
@@ -328,6 +407,92 @@ public class Controleur {
 					setEnabled(true);
 				}
 			}
+		}
+	}
+	
+	public class DemandeNouveauProjet extends AbstractAction {
+		private static final long serialVersionUID = 4003769082949761808L;
+		public DemandeNouveauProjet() {
+			super("Nouveau projet");
+		}
+		public void actionPerformed(ActionEvent e) {
+			DialogNouveauProjet dialogNouveauProjet = new DialogNouveauProjet(Controleur.this);
+			dialogNouveauProjet.setVisible(true);
+		}
+	}
+	
+	public class DemandeChargerProjet extends AbstractAction {
+		private static final long serialVersionUID = -6466999554938192061L;
+		public DemandeChargerProjet() {
+			super("Ouvrir...");
+		}
+		public void actionPerformed(ActionEvent e) {
+			JFileChooser fileChooser = new JFileChooser(GestionnairePreferences.getDossierSauvegarde());
+			fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+			int returnVal = fileChooser.showOpenDialog(fenetrePrincipale);
+	        if (returnVal == JFileChooser.APPROVE_OPTION) {
+	            File file = fileChooser.getSelectedFile();
+	            chargerUnAutreProjet(file);
+	        }
+		}
+	}
+	
+	public class DemandeChargerDernierProjet extends AbstractAction {
+		private static final long serialVersionUID = -4360693064103143497L;
+		private ObservateurChangementDeFichierSauvegarde observateurChangementDeFichierSauvegarde;
+		public DemandeChargerDernierProjet() {
+			super();
+			this.majDemande();
+			this.observateurChangementDeFichierSauvegarde = new ObservateurChangementDeFichierSauvegarde();
+			GestionnairePreferences.getNotificationChangementDeFichierSauvegarde().addObserver(this.observateurChangementDeFichierSauvegarde);
+		}
+		public void actionPerformed(ActionEvent e) {
+			chargerUnAutreProjet(GestionnairePreferences.getFichierSauvegarde());
+		}
+		private void majDemande() {
+			if (GestionnairePreferences.getDernierProjetExiste()) {
+				putValue(NAME, GestionnairePreferences.getFichierSauvegarde().toString());
+				setEnabled(true);
+			} else {
+				putValue(NAME, "Aucun projet");
+				setEnabled(false);
+			}
+		}
+		private class ObservateurChangementDeFichierSauvegarde implements Observer {
+			public void update(Observable arg0, Object arg1) {
+				majDemande();
+			}
+		}
+	}
+	
+	public class DemandeEnregistrerProjet extends AbstractAction {
+		private static final long serialVersionUID = 2589316086835317136L;
+		public DemandeEnregistrerProjet() {
+			super("Enregistrer");
+		}
+		public void actionPerformed(ActionEvent e) {
+			enregistrerProjetActuel();
+		}
+	}
+	
+	public class DemandeEnregistrerProjetSous extends AbstractAction {
+		private static final long serialVersionUID = 4210244625944799282L;
+		public DemandeEnregistrerProjetSous() {
+			super("Enregistrer sous...");
+		}
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+	}
+	
+	public class DemandeFermerProjet extends AbstractAction {
+		private static final long serialVersionUID = -2412248913315236718L;
+		public DemandeFermerProjet() {
+			super("Fermer le projet");
+		}
+		public void actionPerformed(ActionEvent e) {
+			changerDeProjetActuel(null);
 		}
 	}
 	
@@ -426,6 +591,10 @@ public class Controleur {
 		this.actionActuelle = actionActuelle;
 	}
 	
+	public FenetrePrincipale getFenetrePrincipale() {
+		return fenetrePrincipale;
+	}
+
 	public void menuPrincipalConsole() {
 		while (true) {
 			System.out.println("");
@@ -459,14 +628,14 @@ public class Controleur {
 				
 			case 'c':
 				System.out.println("Entrez l'adresse du projet (par défaut à l'adresse '"
-						+ GestionnairePreferences.getCheminSauvegarde().toString() + "').");
+						+ GestionnairePreferences.getFichierSauvegarde().toString() + "').");
 				String chemin = Console.lireLigne();
 				if (chemin.equals("")) {
 					//System.out.println("BUG DE LA CLASSE Console.java FOURNIE PAR SUPELEC !");
 					chemin = Console.lireLigne();
 				}
 				if (chemin.equals("")) {
-					chemin = GestionnairePreferences.getCheminSauvegarde().toString();
+					chemin = GestionnairePreferences.getFichierSauvegarde().toString();
 				}
 				try {
 					this.changerDeProjetActuel(GestionnaireSauvegarde.chargerProjetDepuisFichier(new File(chemin)));
@@ -639,7 +808,7 @@ public class Controleur {
 				File chemin = new File(cheminString);
 				this.projetActuel.setCheminSauvegarde(chemin);
 				try {
-					this.projetActuel.enregistrerProjet();
+					this.enregistrerProjetActuel();
 					System.out.println("Projet enregistré à l'adresse '" + chemin + "' avec succès.");
 				} catch (Exception e) {
 					System.out.println("Erreur lors de l'enregistrement. (Attention il faut que les dossiers existent déjà !).");
@@ -649,7 +818,7 @@ public class Controleur {
 				
 			case 'E':
 				try {
-					this.projetActuel.enregistrerProjet();
+					this.enregistrerProjetActuel();
 					System.out.println("Projet enregistré à l'adresse '" + this.projetActuel.getCheminSauvegarde() + "' avec succès.");
 				} catch (Exception e) {
 					System.out.println("Erreur lors de l'enregistrement. (Attention il faut que les dossiers existent déjà !).");

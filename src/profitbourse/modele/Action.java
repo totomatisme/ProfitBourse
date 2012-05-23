@@ -1,7 +1,6 @@
 package profitbourse.modele;
 
 import java.io.Serializable;
-import java.text.DateFormat;
 import java.util.Date;
 import java.util.Observable;
 
@@ -72,14 +71,15 @@ public class Action implements Serializable {
 	}
 	
 	public Money calculerPlusValue() {
-		return this.getCoursActuel().minus(this.getCoursAchat());
+		return this.calculerTotalActuel().minus(this.calculerTotalAchat());
 	}
 	
 	public String toString() {
-		return "Action : '" + this.getNom() + "', " + this.getCodeISIN() + ", " + this.getQuantite() 
+		/*return "Action : '" + this.getNom() + "', " + this.getCodeISIN() + ", " + this.getQuantite() 
 				+ " achetés le " + DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM).format(this.getDateAchat()) + " pour un cours de " + this.getCoursAchat() 
 				+ ", au total " + this.calculerTotalAchat() + ". Actuellement vaut " + this.getCoursActuel() 
-				+ " (variation " + this.getVariation() + "), au total " + this.calculerTotalActuel() + ".";
+				+ " (variation " + this.getVariation() + "), au total " + this.calculerTotalActuel() + ".";*/
+		return this.getNom();
 	}
 	
 	public class NotificationModificationAction extends Observable {

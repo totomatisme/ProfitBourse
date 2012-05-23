@@ -132,11 +132,6 @@ public class Projet implements Serializable {
 		return this.getNom();
 	}
 	
-	public void enregistrerProjet() throws FileNotFoundException, IOException {
-		GestionnaireSauvegarde.enregistrerProjet(this, this.getCheminSauvegarde());
-		GestionnairePreferences.setCheminSauvegarde(this.getCheminSauvegarde());
-	}
-	
 	public class PortefeuilleNonPresentDansLeProjet extends Exception {
 		private static final long serialVersionUID = 3510456719637459437L;
 	}
