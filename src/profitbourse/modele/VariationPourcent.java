@@ -14,6 +14,7 @@ public class VariationPourcent implements Serializable, Cloneable {
 	
 	private double valeur;
 	private boolean positif;
+	private boolean zero;
 	
 	public VariationPourcent(double valeur) {
 		this.setValeur(valeur);
@@ -38,15 +39,24 @@ public class VariationPourcent implements Serializable, Cloneable {
 
 	public void setValeur(double valeur) {
 		this.valeur = valeur;
-		if (this.valeur < 0) {
-			this.positif = false;
+		if (this.valeur == 0) {
+			this.zero = true;
 		} else {
-			this.positif = true;
+			this.zero = false;
+			if (this.valeur < 0) {
+				this.positif = false;
+			} else {
+				this.positif = true;
+			}
 		}
 	}
 
 	public boolean isPositif() {
 		return positif;
+	}
+
+	public boolean isZero() {
+		return zero;
 	}
 	
 	/*

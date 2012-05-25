@@ -14,6 +14,8 @@ public class SplitPanePrincipal extends JSplitPane {
 	
 	public SplitPanePrincipal(Controleur controleur) {
 		super(JSplitPane.HORIZONTAL_SPLIT);
+		//this.setResizeWeight(0.0);
+		this.setDividerLocation(220);
 		this.controleur = controleur;
 		
 		this.splitPaneColonneGauche = new SplitPaneColonneGauche(this.controleur);

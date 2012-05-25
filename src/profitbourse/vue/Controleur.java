@@ -1,5 +1,6 @@
 package profitbourse.vue;
 
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -67,6 +68,7 @@ public class Controleur {
 	public DemandeEnregistrerProjet demandeEnregistrerProjet;
 	public DemandeEnregistrerProjetSous demandeEnregistrerProjetSous;
 	public DemandeFermerProjet demandeFermerProjet;
+	public DemandeQuitterApplication demandeQuitterApplication;
 	
 	public Controleur() {
 		this.projetActuel = null;
@@ -105,16 +107,18 @@ public class Controleur {
 		this.demandeEnregistrerProjet = new DemandeEnregistrerProjet();
 		this.demandeEnregistrerProjetSous = new DemandeEnregistrerProjetSous();
 		this.demandeFermerProjet = new DemandeFermerProjet();
+		this.demandeQuitterApplication = new DemandeQuitterApplication();
 	}
 	
 	private void construireInterface() {
 		Locale.setDefault(Locale.FRANCE);
-		
+		/*
 		try {
 			UIManager.setLookAndFeel(new MetalLookAndFeel());
 		} catch (UnsupportedLookAndFeelException e) {
 			e.printStackTrace();
 		}
+		*/
 		
 		this.fenetrePrincipale = new FenetrePrincipale(this);
 		
@@ -224,6 +228,7 @@ public class Controleur {
 		private ObservateurChangementDeProjetCourant observateurChangementDeProjetCourant;
 		public DemandeAjoutPortefeuille() {
 			super("Nouveau");
+			this.putValue(SHORT_DESCRIPTION, "Ajouter un portfeuille");
 			this.setEnabled(false);
 			this.observateurChangementDeProjetCourant = new ObservateurChangementDeProjetCourant();
 			getNotificationChangementDeProjetCourant().addObserver(this.observateurChangementDeProjetCourant);
@@ -249,6 +254,7 @@ public class Controleur {
 		private ObservateurChangementDePortefeuilleCourant observateurChangementDePortefeuilleCourant;
 		public DemandeSuppressionPortefeuille() {
 			super("Supprimer");
+			this.putValue(SHORT_DESCRIPTION, "Supprimer le portfeuille");
 			this.setEnabled(false);
 			this.observateurChangementDePortefeuilleCourant = new ObservateurChangementDePortefeuilleCourant();
 			getNotificationChangementDePortefeuilleCourant().addObserver(this.observateurChangementDePortefeuilleCourant);
@@ -286,6 +292,7 @@ public class Controleur {
 		private ObservateurChangementDeProjetCourant observateurChangementDeProjetCourant;
 		public DemandeAjoutIndice() {
 			super("Ajouter");
+			this.putValue(SHORT_DESCRIPTION, "Ajouter un indice");
 			this.setEnabled(false);
 			this.observateurChangementDeProjetCourant = new ObservateurChangementDeProjetCourant();
 			getNotificationChangementDeProjetCourant().addObserver(this.observateurChangementDeProjetCourant);
@@ -311,6 +318,7 @@ public class Controleur {
 		private ObservateurChangementIndiceCourant observateurChangementIndiceCourant;
 		public DemandeSuppressionIndice() {
 			super("Supprimer");
+			this.putValue(SHORT_DESCRIPTION, "Supprimer l'indice");
 			this.setEnabled(false);
 			this.observateurChangementIndiceCourant = new ObservateurChangementIndiceCourant();
 			getNotificationChangementIndiceCourant().addObserver(this.observateurChangementIndiceCourant);
@@ -348,6 +356,7 @@ public class Controleur {
 		private ObservateurChangementDePortefeuilleCourant observateurChangementDePortefeuilleCourant;
 		public DemandeAjoutAction() {
 			super("Ajouter une action");
+			this.putValue(SHORT_DESCRIPTION, "Ajouter une action");
 			this.setEnabled(false);
 			this.observateurChangementDePortefeuilleCourant = new ObservateurChangementDePortefeuilleCourant();
 			getNotificationChangementDePortefeuilleCourant().addObserver(this.observateurChangementDePortefeuilleCourant);
@@ -373,6 +382,7 @@ public class Controleur {
 		private ObservateurChangementActionCourante observateurChangementActionCourante;
 		public DemandeSuppressionAction() {
 			super("Supprimer l'action");
+			this.putValue(SHORT_DESCRIPTION, "Supprimer l'action");
 			this.setEnabled(false);
 			this.observateurChangementActionCourante = new ObservateurChangementActionCourante();
 			getNotificationChangementActionCourante().addObserver(this.observateurChangementActionCourante);
@@ -410,6 +420,7 @@ public class Controleur {
 		private ObservateurChangementActionCourante observateurChangementActionCourante;
 		public DemandeVendreEnPartieAction() {
 			super("Vendre");
+			this.putValue(SHORT_DESCRIPTION, "Vendre en partie l'action");
 			this.setEnabled(false);
 			this.observateurChangementActionCourante = new ObservateurChangementActionCourante();
 			getNotificationChangementActionCourante().addObserver(this.observateurChangementActionCourante);
@@ -435,6 +446,7 @@ public class Controleur {
 		private ObservateurChangementDePortefeuilleCourant observateurChangementDePortefeuilleCourant;
 		public DemandeMajPortefeuille() {
 			super("Mise à jour Web");
+			this.putValue(SHORT_DESCRIPTION, "Mettre à jour le portefeuille");
 			this.setEnabled(false);
 			this.observateurChangementDePortefeuilleCourant = new ObservateurChangementDePortefeuilleCourant();
 			getNotificationChangementDePortefeuilleCourant().addObserver(this.observateurChangementDePortefeuilleCourant);
@@ -458,6 +470,7 @@ public class Controleur {
 		private static final long serialVersionUID = 4003769082949761808L;
 		public DemandeNouveauProjet() {
 			super("Nouveau projet");
+			this.putValue(SHORT_DESCRIPTION, "Nouveau projet");
 		}
 		public void actionPerformed(ActionEvent e) {
 			DialogNouveauProjet dialogNouveauProjet = new DialogNouveauProjet(Controleur.this);
@@ -469,6 +482,7 @@ public class Controleur {
 		private static final long serialVersionUID = -6466999554938192061L;
 		public DemandeChargerProjet() {
 			super("Ouvrir...");
+			this.putValue(SHORT_DESCRIPTION, "Ouvrir...");
 		}
 		public void actionPerformed(ActionEvent e) {
 			JFileChooser fileChooser = new JFileChooser(GestionnairePreferences.getDossierSauvegarde());
@@ -514,6 +528,7 @@ public class Controleur {
 		private ObservateurChangementDeProjetCourant observateurChangementDeProjetCourant;
 		public DemandeEnregistrerProjet() {
 			super("Enregistrer");
+			this.putValue(SHORT_DESCRIPTION, "Enregistrer");
 			setEnabled(false);
 			this.observateurChangementDeProjetCourant = new ObservateurChangementDeProjetCourant();
 			getNotificationChangementDeProjetCourant().addObserver(this.observateurChangementDeProjetCourant);
@@ -538,6 +553,7 @@ public class Controleur {
 		private ObservateurChangementDeProjetCourant observateurChangementDeProjetCourant;
 		public DemandeEnregistrerProjetSous() {
 			super("Enregistrer sous...");
+			this.putValue(SHORT_DESCRIPTION, "Enregistrer sous...");
 			setEnabled(false);
 			this.observateurChangementDeProjetCourant = new ObservateurChangementDeProjetCourant();
 			getNotificationChangementDeProjetCourant().addObserver(this.observateurChangementDeProjetCourant);
@@ -569,6 +585,7 @@ public class Controleur {
 		private ObservateurChangementDeProjetCourant observateurChangementDeProjetCourant;
 		public DemandeFermerProjet() {
 			super("Fermer le projet");
+			this.putValue(SHORT_DESCRIPTION, "Fermer le projet");
 			setEnabled(false);
 			this.observateurChangementDeProjetCourant = new ObservateurChangementDeProjetCourant();
 			getNotificationChangementDeProjetCourant().addObserver(this.observateurChangementDeProjetCourant);
@@ -585,6 +602,21 @@ public class Controleur {
 					setEnabled(true);
 				}
 			}
+		}
+	}
+	
+	public class DemandeQuitterApplication extends AbstractAction {
+		private static final long serialVersionUID = -2412248913315236718L;
+		public DemandeQuitterApplication() {
+			super("Quitter ProfitBourse");
+			this.putValue(SHORT_DESCRIPTION, "Quitter ProfitBourse");
+		}
+		public void actionPerformed(ActionEvent e) {
+			Dimension tailleFenetre = fenetrePrincipale.getSize();
+			GestionnairePreferences.setHauteurFenetre(tailleFenetre.height);
+			GestionnairePreferences.setLargeurFenetre(tailleFenetre.width);
+			//System.out.println(tailleFenetre.toString());
+			System.exit(0);
 		}
 	}
 	

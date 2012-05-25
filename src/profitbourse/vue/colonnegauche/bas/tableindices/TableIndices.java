@@ -9,7 +9,9 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import profitbourse.modele.Indice;
+import profitbourse.modele.VariationPourcent;
 import profitbourse.vue.Controleur;
+import profitbourse.vue.colonnemilieu.milieu.tableportefeuille.VariationPourcentCellRenderer;
 
 public class TableIndices extends JTable {
 	
@@ -26,6 +28,7 @@ public class TableIndices extends JTable {
 		this.modeleTableIndices = new ModeleTableIndices(this.controleur);
 		this.setModel(this.modeleTableIndices);
 		
+		this.setDefaultRenderer(VariationPourcent.class, new VariationPourcentCellRenderer());
 		this.setFillsViewportHeight(true);
 		
 		this.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);

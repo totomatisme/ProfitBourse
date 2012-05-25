@@ -19,6 +19,8 @@ public class MenuFichier extends JMenu {
 	private JMenuItem itemEnregistrerSous;
 	private JMenuItem itemFermerProjet;
 	
+	private JMenuItem itemQuitterApplication;
+	
 	public MenuFichier(Controleur controleur) {
 		super("Fichier");
 		this.controleur = controleur;
@@ -46,6 +48,11 @@ public class MenuFichier extends JMenu {
 		
 		this.itemFermerProjet = new JMenuItem(this.controleur.demandeFermerProjet);
 		this.add(this.itemFermerProjet);
+		
+		this.addSeparator();
+		
+		this.itemQuitterApplication = new JMenuItem(this.controleur.demandeQuitterApplication);
+		this.add(this.itemQuitterApplication);
 	}
 
 }

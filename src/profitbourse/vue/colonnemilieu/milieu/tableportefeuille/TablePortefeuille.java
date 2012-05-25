@@ -10,6 +10,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import profitbourse.modele.Action;
+import profitbourse.modele.VariationPourcent;
 import profitbourse.vue.Controleur;
 
 public class TablePortefeuille extends JTable {
@@ -30,6 +31,8 @@ public class TablePortefeuille extends JTable {
 		this.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		this.setFillsViewportHeight(true);
 		this.setDefaultRenderer(Date.class, new DateCellRenderer());
+		this.setDefaultRenderer(VariationPourcent.class, new VariationPourcentCellRenderer());
+		this.getColumnModel().getColumn(7).setCellRenderer(new PlusValueCellRenderer());
 		
 		this.selectionActionListener = new SelectionActionListener();
 		this.getSelectionModel().addListSelectionListener(this.selectionActionListener);

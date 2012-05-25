@@ -51,7 +51,7 @@ public class DialogVendreEnPartieAction extends JDialog {
 		// Label et TextField de selection de la quantité.
 		this.panelLabelEtTexteQuantite = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		this.panelLabelEtTexteQuantite.setBorder(BorderFactory.createEmptyBorder(0,10,0,10));
-		this.labelQuantite = new JLabel("Quantité à vendre :  ");
+		this.labelQuantite = new JLabel("Quantité de '" + controleur.getActionActuelle().getNom() + "' à vendre :  ");
 		this.panelLabelEtTexteQuantite.add(this.labelQuantite);
 		this.texteQuantite = new JTextField(4);
 		this.panelLabelEtTexteQuantite.add(this.texteQuantite);
