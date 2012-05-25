@@ -7,6 +7,8 @@ import java.util.Observer;
 import javax.swing.table.AbstractTableModel;
 
 import profitbourse.modele.Projet;
+import profitbourse.modele.ValeurCoursPoints;
+import profitbourse.modele.VariationPourcent;
 import profitbourse.vue.Controleur;
 
 public class ModeleTableIndices extends AbstractTableModel {
@@ -75,6 +77,18 @@ public class ModeleTableIndices extends AbstractTableModel {
 			default:
 				return null; //Ne devrait jamais arriver
 			}
+		}
+	}
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public Class getColumnClass(int columnIndex) { 
+		switch (columnIndex) {
+		case 1:
+			return ValeurCoursPoints.class;
+		case 2:
+			return VariationPourcent.class;
+		default:
+			return Object.class;
 		}
 	}
 	

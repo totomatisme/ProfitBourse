@@ -122,7 +122,7 @@ import java.math.RoundingMode;
  * }
  * </PRE>
  */
-public final class Money implements Comparable<Money>, Serializable {
+public final class Money implements Comparable<Money>, Serializable, Cloneable {
 
 	/**
 	 * Thrown when a set of <tt>Money</tt> objects do not have matching
@@ -489,6 +489,10 @@ public final class Money implements Comparable<Money>, Serializable {
 			return comparison;
 
 		return EQUAL;
+	}
+	
+	protected Object clone() {
+		return new Money(this.fAmount, this.fCurrency, this.fRounding);
 	}
 
 	// PRIVATE //

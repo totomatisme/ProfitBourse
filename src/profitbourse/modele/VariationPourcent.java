@@ -3,13 +3,13 @@ package profitbourse.modele;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 
-public class VariationPourcent implements Serializable {
+public class VariationPourcent implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = 5944993674320766444L;
 	
 	private static DecimalFormat formatDecimal;
 	static {
-		formatDecimal = new DecimalFormat("#.00");
+		formatDecimal = new DecimalFormat("0.00");
 	}
 	
 	private double valeur;
@@ -24,8 +24,12 @@ public class VariationPourcent implements Serializable {
 		if (this.isPositif()) {
 			return "+" + resultat;
 		} else {
-			return "-" + resultat;
+			return resultat;
 		}
+	}
+	
+	protected Object clone() {
+		return new VariationPourcent(this.getValeur());
 	}
 	
 	public double getValeur() {
@@ -47,7 +51,7 @@ public class VariationPourcent implements Serializable {
 	
 	/*
 	public static void main(String[] args) {
-		VariationPourcent v = new VariationPourcent(09.09);
+		VariationPourcent v = new VariationPourcent(.09);
 		System.out.println(v.toString());
 	}
 	*/

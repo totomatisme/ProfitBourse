@@ -3,12 +3,12 @@ package profitbourse.modele;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 
-public class ValeurCoursPoints implements Serializable {
+public class ValeurCoursPoints implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = 5203267473810739983L;
 	private static DecimalFormat formatDecimal;
 	static {
-		formatDecimal = new DecimalFormat("#.00");
+		formatDecimal = new DecimalFormat("0.00");
 	}
 	
 	private double valeur;
@@ -19,6 +19,10 @@ public class ValeurCoursPoints implements Serializable {
 	
 	public String toString() {
 		return formatDecimal.format(this.getValeur()) + " pts";
+	}
+	
+	protected Object clone() {
+		return new ValeurCoursPoints(this.getValeur());
 	}
 
 	public double getValeur() {

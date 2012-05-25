@@ -16,7 +16,7 @@ public class Action implements Serializable {
 	private Money coursAchat;
 	private Money coursActuel;
 	private Date dateAchat;
-	private float variation;
+	private VariationPourcent variation;
 	private Portefeuille portefeuille;
 	private transient NotificationModificationAction notificationModificationAction;
 	
@@ -28,7 +28,7 @@ public class Action implements Serializable {
 		this.dateAchat = new Date();
 		this.coursAchat = null;
 		this.coursActuel = null;
-		this.variation = 0;
+		this.variation = null;
 		this.notificationModificationAction = new NotificationModificationAction();
 		this.notificationModificationAction.addObserver(this.portefeuille.getObservateurModificationAction());
 	}
@@ -43,7 +43,7 @@ public class Action implements Serializable {
 	
 	public void premiereMajWeb() {
 		GestionnaireMajWeb.majAction(this);
-		this.coursAchat = this.getCoursActuel();
+		this.coursAchat = (Money)this.getCoursActuel().clone();
 		this.notificationModificationAction.notifierModificationAction(this);
 	}
 	
@@ -57,7 +57,7 @@ public class Action implements Serializable {
 		this.notificationModificationAction.notifierModificationAction(this);
 	}
 	
-	public void majCoursEtVariation(Money nouveauCours, float nouvelleVariation) {
+	public void majCoursEtVariation(Money nouveauCours, VariationPourcent nouvelleVariation) {
 		this.coursActuel = nouveauCours;
 		this.variation = nouvelleVariation;
 	}
@@ -99,7 +99,7 @@ public class Action implements Serializable {
 		return coursActuel;
 	}
 
-	public float getVariation() {
+	public VariationPourcent getVariation() {
 		return variation;
 	}
 

@@ -8,6 +8,7 @@ import java.util.Observer;
 import javax.swing.table.AbstractTableModel;
 
 import profitbourse.modele.Portefeuille;
+import profitbourse.modele.VariationPourcent;
 import profitbourse.vue.Controleur;
 
 public class ModeleTablePortefeuille extends AbstractTableModel {
@@ -100,10 +101,13 @@ public class ModeleTablePortefeuille extends AbstractTableModel {
 		}
 	}
 	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Class getColumnClass(int columnIndex) { 
 		switch (columnIndex) {
 		case 3:
 			return Date.class;
+		case 9:
+			return VariationPourcent.class;
 		default:
 			return Object.class;
 		}
