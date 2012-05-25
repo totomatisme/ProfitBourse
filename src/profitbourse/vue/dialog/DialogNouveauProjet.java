@@ -58,7 +58,7 @@ public class DialogNouveauProjet extends JDialog {
 		// Boutons en bas à droite
 		this.panelBoutons = new JPanel();
 		this.panelBoutons.setLayout(new BoxLayout(this.panelBoutons, BoxLayout.LINE_AXIS));
-		this.panelBoutons.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
+		this.panelBoutons.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		this.panelBoutons.add(Box.createHorizontalGlue());
 		this.boutonCreer = new JButton("Créer");
 		this.boutonCreer.addActionListener(this.demandeCreation);
@@ -86,6 +86,11 @@ public class DialogNouveauProjet extends JDialog {
 	private class DemandeCreation implements ActionListener {
 		public void actionPerformed(ActionEvent arg0) {
 			String nom = texteNom.getText();
+			if (nom.equals("")) {
+				controleur.afficherUneErreur("Le nom est vide !");
+				return;
+			}
+			
 			Projet nouveauProjet = new Projet(nom);
 			controleur.changerDeProjetActuel(nouveauProjet);
 			dispose();

@@ -13,6 +13,7 @@ public class PanelBoutonsPortefeuilleGauche extends JPanel {
 	private Controleur controleur;
 	private JButton boutonAjouterAction;
 	private JButton boutonSupprimerAction;
+	private JButton boutonVendreEnPartieAction;
 	
 	public PanelBoutonsPortefeuilleGauche(Controleur controleur) {
 		super(new FlowLayout(FlowLayout.LEFT));
@@ -23,6 +24,9 @@ public class PanelBoutonsPortefeuilleGauche extends JPanel {
 		
 		this.boutonSupprimerAction = new JButton(this.controleur.demandeSuppressionAction);
 		this.add(this.boutonSupprimerAction);
+		
+		this.boutonVendreEnPartieAction = new JButton(this.controleur.demandeVendreEnPartieAction);
+		this.add(this.boutonVendreEnPartieAction);
 	}
 	
 }

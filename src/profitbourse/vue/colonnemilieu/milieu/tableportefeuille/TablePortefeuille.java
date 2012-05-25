@@ -1,5 +1,6 @@
 package profitbourse.vue.colonnemilieu.milieu.tableportefeuille;
 
+import java.util.Date;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -28,6 +29,7 @@ public class TablePortefeuille extends JTable {
 		
 		this.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		this.setFillsViewportHeight(true);
+		this.setDefaultRenderer(Date.class, new DateCellRenderer());
 		
 		this.selectionActionListener = new SelectionActionListener();
 		this.getSelectionModel().addListSelectionListener(this.selectionActionListener);

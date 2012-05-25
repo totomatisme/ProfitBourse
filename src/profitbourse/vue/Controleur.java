@@ -29,6 +29,8 @@ import profitbourse.vue.barredemenu.BarreDeMenu;
 import profitbourse.vue.dialog.DialogNouveauPortefeuille;
 import profitbourse.vue.dialog.DialogNouveauProjet;
 import profitbourse.vue.dialog.DialogNouvelIndice;
+import profitbourse.vue.dialog.DialogNouvelleAction;
+import profitbourse.vue.dialog.DialogVendreEnPartieAction;
 
 public class Controleur {
 	
@@ -49,6 +51,7 @@ public class Controleur {
 	private ObservateurSuppressionIndice observateurSuppressionIndice;
 	private ObservateurSuppressionAction observateurSuppressionAction;
 	private ObservateurAjoutPortefeuille observateurAjoutPortefeuille;
+	private ObservateurAjoutIndice observateurAjoutIndice;
 	
 	public DemandeAjoutPortefeuille demandeAjoutPortefeuille;
 	public DemandeSuppressionPortefeuille demandeSuppressionPortefeuille;
@@ -56,6 +59,7 @@ public class Controleur {
 	public DemandeSuppressionIndice demandeSuppressionIndice;
 	public DemandeAjoutAction demandeAjoutAction;
 	public DemandeSuppressionAction demandeSuppressionAction;
+	public DemandeVendreEnPartieAction demandeVendreEnPartieAction;
 	public DemandeMajPortefeuille demandeMajPortefeuille;
 	public DemandeNouveauProjet demandeNouveauProjet;
 	public DemandeChargerProjet demandeChargerProjet;
@@ -76,6 +80,7 @@ public class Controleur {
 		this.observateurSuppressionIndice = new ObservateurSuppressionIndice();
 		this.observateurSuppressionAction = new ObservateurSuppressionAction();
 		this.observateurAjoutPortefeuille = new ObservateurAjoutPortefeuille();
+		this.observateurAjoutIndice = new ObservateurAjoutIndice();
 		
 		// Il faut créer les objets demandes (AbstractAction) avant l'interface.
 		this.creerDemandes();
@@ -92,6 +97,7 @@ public class Controleur {
 		this.demandeAjoutIndice = new DemandeAjoutIndice();
 		this.demandeAjoutAction = new DemandeAjoutAction();
 		this.demandeSuppressionAction = new DemandeSuppressionAction();
+		this.demandeVendreEnPartieAction = new DemandeVendreEnPartieAction();
 		this.demandeMajPortefeuille = new DemandeMajPortefeuille();
 		this.demandeNouveauProjet = new DemandeNouveauProjet();
 		this.demandeChargerProjet = new DemandeChargerProjet();
@@ -121,13 +127,13 @@ public class Controleur {
 	public void changerDePortefeuilleActuel(Portefeuille nouveauPortefeuilleActuel) {
 		if (nouveauPortefeuilleActuel != this.portefeuilleActuel) {
 			if (this.portefeuilleActuel != null) {
-				this.portefeuilleActuel.getNotificationActionSupprimee().deleteObserver(this.observateurSuppressionAction);
+				//this.portefeuilleActuel.getNotificationActionSupprimee().deleteObserver(this.observateurSuppressionAction);
 			}
 			this.portefeuilleActuel = nouveauPortefeuilleActuel;
 			this.changerActionActuelle(null);
 			this.notificationChangementDePortefeuilleCourant.notifierChangementDePortefeuilleCourant(nouveauPortefeuilleActuel);
 			if (nouveauPortefeuilleActuel != null) {
-				nouveauPortefeuilleActuel.getNotificationActionSupprimee().addObserver(this.observateurSuppressionAction);
+				//nouveauPortefeuilleActuel.getNotificationActionSupprimee().addObserver(this.observateurSuppressionAction);
 			}
 		}
 	}
@@ -135,18 +141,20 @@ public class Controleur {
 	public void changerDeProjetActuel(Projet nouveauProjetActuel) {
 		if (nouveauProjetActuel != this.projetActuel) {
 			if (this.projetActuel != null) {
-				this.projetActuel.getNotificationPortefeuilleSupprime().deleteObserver(this.observateurSuppressionPortefeuille);
+				/*this.projetActuel.getNotificationPortefeuilleSupprime().deleteObserver(this.observateurSuppressionPortefeuille);
 				this.projetActuel.getNotificationIndiceSupprime().deleteObserver(this.observateurSuppressionIndice);
 				this.projetActuel.getNotificationPortefeuilleAjoute().deleteObserver(this.observateurAjoutPortefeuille);
+				this.projetActuel.getNotificationIndiceAjoute().deleteObserver(this.observateurAjoutIndice);*/
 			}
 			this.projetActuel = nouveauProjetActuel;
 			this.changerDePortefeuilleActuel(null);
 			this.changerIndiceActuel(null);
 			this.notificationChangementDeProjetCourant.notifierChangementDeProjetCourant(nouveauProjetActuel);
 			if (nouveauProjetActuel != null) {
-				nouveauProjetActuel.getNotificationPortefeuilleSupprime().addObserver(this.observateurSuppressionPortefeuille);
+				/*nouveauProjetActuel.getNotificationPortefeuilleSupprime().addObserver(this.observateurSuppressionPortefeuille);
 				nouveauProjetActuel.getNotificationIndiceSupprime().addObserver(this.observateurSuppressionIndice);
 				nouveauProjetActuel.getNotificationPortefeuilleAjoute().addObserver(this.observateurAjoutPortefeuille);
+				nouveauProjetActuel.getNotificationIndiceAjoute().addObserver(this.observateurAjoutIndice);*/
 			}
 		}
 	}
@@ -255,6 +263,7 @@ public class Controleur {
 			if (reponse == JOptionPane.OK_OPTION) {
 				try {
 					projetActuel.supprimerPortefeuille(portefeuilleActuel);
+					changerDePortefeuilleActuel(null);
 				} catch (PortefeuilleNonPresentDansLeProjet e) {
 					e.printStackTrace();
 				}
@@ -316,6 +325,7 @@ public class Controleur {
 			if (reponse == JOptionPane.OK_OPTION) {
 				try {
 					projetActuel.supprimerIndice(indiceActuel);
+					changerIndiceActuel(null);
 				} catch (IndiceNonPresentDansLeProjet e) {
 					e.printStackTrace();
 				}
@@ -343,8 +353,8 @@ public class Controleur {
 			getNotificationChangementDePortefeuilleCourant().addObserver(this.observateurChangementDePortefeuilleCourant);
 		}
 		public void actionPerformed(ActionEvent arg0) {
-			// TODO Auto-generated method stub
-			
+			DialogNouvelleAction dialogNouvelleAction = new DialogNouvelleAction(Controleur.this);
+			dialogNouvelleAction.setVisible(true);
 		}
 		private class ObservateurChangementDePortefeuilleCourant implements Observer {
 			public void update(Observable arg0, Object arg1) {
@@ -377,10 +387,36 @@ public class Controleur {
 			if (reponse == JOptionPane.OK_OPTION) {
 				try {
 					portefeuilleActuel.supprimerTotalementAction(actionActuelle);
+					changerActionActuelle(null);
 				} catch (ActionNonPresenteDansLePortefeuille e) {
 					e.printStackTrace();
 				}
 			}
+		}
+		private class ObservateurChangementActionCourante implements Observer {
+			public void update(Observable arg0, Object arg1) {
+				Action nouvelleAction = (Action)arg1;
+				if (nouvelleAction == null) {
+					setEnabled(false);
+				} else {
+					setEnabled(true);
+				}
+			}
+		}
+	}
+	
+	public class DemandeVendreEnPartieAction extends AbstractAction {
+		private static final long serialVersionUID = 5101785260195517184L;
+		private ObservateurChangementActionCourante observateurChangementActionCourante;
+		public DemandeVendreEnPartieAction() {
+			super("Vendre");
+			this.setEnabled(false);
+			this.observateurChangementActionCourante = new ObservateurChangementActionCourante();
+			getNotificationChangementActionCourante().addObserver(this.observateurChangementActionCourante);
+		}
+		public void actionPerformed(ActionEvent arg0) {
+			DialogVendreEnPartieAction dialogVendreEnPartieAction = new DialogVendreEnPartieAction(Controleur.this);
+			dialogVendreEnPartieAction.setVisible(true);
 		}
 		private class ObservateurChangementActionCourante implements Observer {
 			public void update(Observable arg0, Object arg1) {
@@ -615,6 +651,16 @@ public class Controleur {
 			if (notificationPortefeuilleAjoute == arg0) {
 				Portefeuille portefeuilleAjoute = (Portefeuille)arg1;
 				changerDePortefeuilleActuel(portefeuilleAjoute);
+			}
+		}
+	}
+	
+	private class ObservateurAjoutIndice implements Observer {
+		public void update(Observable arg0, Object arg1) {
+			Projet.NotificationIndiceAjoute notificationIndiceAjoute = projetActuel.getNotificationIndiceAjoute();
+			if (notificationIndiceAjoute == arg0) {
+				Indice indiceAjoute = (Indice)arg1;
+				changerIndiceActuel(indiceAjoute);
 			}
 		}
 	}

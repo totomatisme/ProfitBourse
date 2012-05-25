@@ -80,7 +80,7 @@ public class DialogNouveauPortefeuille extends JDialog {
 		// Boutons en bas à droite
 		this.panelBoutons = new JPanel();
 		this.panelBoutons.setLayout(new BoxLayout(this.panelBoutons, BoxLayout.LINE_AXIS));
-		this.panelBoutons.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
+		this.panelBoutons.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		this.panelBoutons.add(Box.createHorizontalGlue());
 		this.boutonAjouter = new JButton("Ajouter");
 		this.boutonAjouter.addActionListener(this.demandeAjout);
@@ -93,7 +93,7 @@ public class DialogNouveauPortefeuille extends JDialog {
 		
 		this.getRootPane().setDefaultButton(this.boutonAjouter);
 		this.setModalityType(ModalityType.APPLICATION_MODAL);
-		this.setTitle("Nouveau projet");
+		this.setTitle("Nouveau portefeuille");
 		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		this.pack();
 		this.setLocationRelativeTo(this.controleur.getFenetrePrincipale());
@@ -108,16 +108,24 @@ public class DialogNouveauPortefeuille extends JDialog {
 	private class DemandeAjout implements ActionListener {
 		public void actionPerformed(ActionEvent arg0) {
 			String nom = texteNom.getText();
-			String deviseString = (String)comboChoixDevise.getSelectedItem();
+			if (nom.equals("")) {
+				controleur.afficherUneErreur("Le nom est vide !");
+				return;
+			}
 			
+			String deviseString = (String)comboChoixDevise.getSelectedItem();
+			Currency devise = null;
 			try {
-				Currency devise = Currency.getInstance(deviseString);
-				Portefeuille nouveauPortefeuille = new Portefeuille(nom, devise, controleur.getProjetActuel());
-				controleur.getProjetActuel().ajouterNouveauPortefeuille(nouveauPortefeuille);
-				dispose();
+				devise = Currency.getInstance(deviseString);
 			} catch (IllegalArgumentException e) {
 				controleur.afficherUneErreur("La devise '" + deviseString + "' ne correspond pas à une devise connue !");
+				return;
 			}
+			
+			Portefeuille nouveauPortefeuille = new Portefeuille(nom, devise, controleur.getProjetActuel());
+			controleur.getProjetActuel().ajouterNouveauPortefeuille(nouveauPortefeuille);
+			controleur.changerDePortefeuilleActuel(nouveauPortefeuille);
+			dispose();
 		}
 	}
 	

@@ -15,13 +15,14 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import profitbourse.modele.Indice;
+import profitbourse.modele.Action;
+import profitbourse.modele.Portefeuille.ActionDejaPresenteDansLePortefeuille;
 import profitbourse.modele.majweb.GestionnaireMajWeb;
 import profitbourse.vue.Controleur;
 
-public class DialogNouvelIndice extends JDialog {
-
-	private static final long serialVersionUID = -5589254054900601860L;
+public class DialogNouvelleAction extends JDialog {
+	
+	private static final long serialVersionUID = 6587731911164687336L;
 	private Controleur controleur;
 	
 	private JPanel panelLabelEtTexte;
@@ -32,6 +33,10 @@ public class DialogNouvelIndice extends JDialog {
 	private JCheckBox checkEntrerNomManuellement;
 	private JTextField texteNom;
 	
+	private JPanel panelLabelEtTexteQuantite;
+	private JLabel labelQuantite;
+	private JTextField texteQuantite;
+	
 	private JPanel panelBoutons;
 	private JButton boutonAjouter;
 	private JButton boutonAnnuler;
@@ -40,7 +45,7 @@ public class DialogNouvelIndice extends JDialog {
 	private DemandeAjout demandeAjout;
 	private ChangementEtatCheckBox changementEtatCheckBox;
 	
-	public DialogNouvelIndice(Controleur controleur) {
+	public DialogNouvelleAction(Controleur controleur) {
 		super();
 		this.controleur = controleur;
 		
@@ -49,7 +54,7 @@ public class DialogNouvelIndice extends JDialog {
 		this.changementEtatCheckBox = new ChangementEtatCheckBox();
 		
 		this.construireInterface();
-	}	
+	}
 	
 	public void construireInterface() {
 		this.setLayout(new BoxLayout(this.getContentPane(), BoxLayout.Y_AXIS));
@@ -58,7 +63,7 @@ public class DialogNouvelIndice extends JDialog {
 		this.panelLabelEtTexte = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		//this.panelLabelEtTexte.setLayout(new BoxLayout(this.panelLabelEtTexte, BoxLayout.LINE_AXIS));
 		this.panelLabelEtTexte.setBorder(BorderFactory.createEmptyBorder(0,10,0,10));
-		this.labelEntrerCode = new JLabel("Entrez le code de l'indice :  ");
+		this.labelEntrerCode = new JLabel("Entrez le code de l'action :  ");
 		this.panelLabelEtTexte.add(this.labelEntrerCode);
 		this.texteCode = new JTextField(3);
 		this.panelLabelEtTexte.add(this.texteCode);
@@ -70,7 +75,7 @@ public class DialogNouvelIndice extends JDialog {
 		this.panelCheckBoxEtTexteNom = new JPanel();
 		this.panelCheckBoxEtTexteNom.setLayout(new BoxLayout(this.panelCheckBoxEtTexteNom, BoxLayout.Y_AXIS));
 		this.panelCheckBoxEtTexteNom.setBorder(BorderFactory.createEmptyBorder(0,10,10,10));
-		this.checkEntrerNomManuellement = new JCheckBox("Entrer manuellement le nom de l'indice :");
+		this.checkEntrerNomManuellement = new JCheckBox("Entrer manuellement le nom de l'action :");
 		this.checkEntrerNomManuellement.setSelected(false);
 		this.checkEntrerNomManuellement.addActionListener(this.changementEtatCheckBox);
 		this.panelCheckBoxEtTexteNom.add(this.checkEntrerNomManuellement);
@@ -78,6 +83,15 @@ public class DialogNouvelIndice extends JDialog {
 		this.texteNom.setEnabled(false);
 		this.panelCheckBoxEtTexteNom.add(this.texteNom);
 		this.add(this.panelCheckBoxEtTexteNom);
+		
+		// Label et TextField de selection de la quantité.
+		this.panelLabelEtTexteQuantite = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		this.panelLabelEtTexteQuantite.setBorder(BorderFactory.createEmptyBorder(0,10,0,10));
+		this.labelQuantite = new JLabel("Quantité achetée :  ");
+		this.panelLabelEtTexteQuantite.add(this.labelQuantite);
+		this.texteQuantite = new JTextField(4);
+		this.panelLabelEtTexteQuantite.add(this.texteQuantite);
+		this.add(this.panelLabelEtTexteQuantite);
 		
 		// Boutons en bas à droite
 		this.panelBoutons = new JPanel();
@@ -95,7 +109,7 @@ public class DialogNouvelIndice extends JDialog {
 		
 		this.getRootPane().setDefaultButton(this.boutonAjouter);
 		this.setModalityType(ModalityType.APPLICATION_MODAL);
-		this.setTitle("Nouvel indice");
+		this.setTitle("Ajouter une action");
 		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		this.pack();
 		this.setLocationRelativeTo(this.controleur.getFenetrePrincipale());
@@ -129,20 +143,38 @@ public class DialogNouvelIndice extends JDialog {
 					return;
 				}
 			} else {
-				nom = GestionnaireMajWeb.obtenirNomIndicePourLeCode(code);
+				nom = GestionnaireMajWeb.obtenirNomActionPourLeCode(code);
 				if (nom == null) {
 					controleur.afficherUneErreur("Le code ne correspond pas à un code connu !");
 					return;
 				}
 			}
 			
-			Indice nouvelIndice = new Indice(nom, code, controleur.getProjetActuel());
-			controleur.getProjetActuel().ajouterNouvelIndice(nouvelIndice);
-			controleur.changerIndiceActuel(nouvelIndice);
-			nouvelIndice.majWeb();
-			dispose();
+			String quantiteString = texteQuantite.getText();
+			int quantite = 0;
+			try {
+				quantite = Integer.parseInt(quantiteString);
+			} catch (NumberFormatException e) {
+				controleur.afficherUneErreur("La quantité '" + quantiteString + "' ne correspond par à un entier !");
+				return;
+			}
+			if (quantite < 0) {
+				controleur.afficherUneErreur("La quantité '" + quantiteString + "' est négative !");
+				return;
+			}
 			
+			Action nouvelleAction = new Action(nom, code, quantite, controleur.getPortefeuilleActuel());
+			try {
+				controleur.getPortefeuilleActuel().ajouterNouvelleAction(nouvelleAction);
+			} catch (ActionDejaPresenteDansLePortefeuille e) {
+				controleur.afficherUneErreur("L'action est déjà présente dans le portefeuille !");
+				e.printStackTrace();
+				return;
+			}
+			controleur.changerActionActuelle(nouvelleAction);
+			nouvelleAction.premiereMajWeb();
+			dispose();
 		}
 	}
-	
+
 }
