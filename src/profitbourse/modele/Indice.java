@@ -10,7 +10,7 @@ public class Indice implements Serializable {
 	private static final long serialVersionUID = -3456702227825000255L;
 	private String nom;
 	private String code;
-	private float cours;
+	private ValeurCoursPoints cours;
 	private float variation;
 	private Projet projet;
 	private transient NotificationModificationIndice notificationModificationIndice;
@@ -19,7 +19,7 @@ public class Indice implements Serializable {
 		this.nom = nom;
 		this.code = code;
 		this.projet = projet;
-		this.cours = 0;
+		this.cours = null;
 		this.variation = 0;
 		this.notificationModificationIndice = new NotificationModificationIndice();
 		this.notificationModificationIndice.addObserver(this.projet.getObservateurModificationIndice());
@@ -38,7 +38,7 @@ public class Indice implements Serializable {
 		this.notificationModificationIndice.notifierModificationIndice(this);
 	}
 	
-	public void majCoursEtVariation(float nouveauCours, float nouvelleVariation) {
+	public void majCoursEtVariation(ValeurCoursPoints nouveauCours, float nouvelleVariation) {
 		this.cours = nouveauCours;
 		this.variation = nouvelleVariation;
 	}
@@ -58,7 +58,7 @@ public class Indice implements Serializable {
 
 	// GETTERS et SETTERS
 	
-	public float getCours() {
+	public ValeurCoursPoints getCours() {
 		return cours;
 	}
 

@@ -19,7 +19,7 @@ public class GestionnaireMajWeb {
 	public static void majIndice(Indice indice) {
 		Double nouveauCoursDouble = new Double(Math.random()*10000.0);
 		Double nouvelleVariationDouble = new Double(Math.random()*10.0 - 5.0);
-		indice.majCoursEtVariation(nouveauCoursDouble.floatValue(), nouvelleVariationDouble.floatValue());
+		indice.majCoursEtVariation(new ValeurCoursPoints(nouveauCoursDouble), nouvelleVariationDouble.floatValue());
 	}
 	
 	public static boolean testExistenceCodeISIN(String codeATester) {

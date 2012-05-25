@@ -27,7 +27,7 @@ public class ModeleTableIndices extends AbstractTableModel {
 		this.projet = null;
 		this.entetes = new ArrayList<String>();
 		this.entetes.add("Code");
-		this.entetes.add("Points");
+		this.entetes.add("Cours");
 		this.entetes.add("%");
 		this.observateurAjoutIndice = new ObservateurAjoutIndice();
 		this.observateurMajIndices = new ObservateurMajIndices();
