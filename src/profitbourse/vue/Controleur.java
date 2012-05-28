@@ -48,12 +48,6 @@ public class Controleur {
 	private NotificationChangementIndiceCourant notificationChangementIndiceCourant;
 	private NotificationChangementActionCourante notificationChangementActionCourante;
 	
-	private ObservateurSuppressionPortefeuille observateurSuppressionPortefeuille;
-	private ObservateurSuppressionIndice observateurSuppressionIndice;
-	private ObservateurSuppressionAction observateurSuppressionAction;
-	private ObservateurAjoutPortefeuille observateurAjoutPortefeuille;
-	private ObservateurAjoutIndice observateurAjoutIndice;
-	
 	public DemandeAjoutPortefeuille demandeAjoutPortefeuille;
 	public DemandeSuppressionPortefeuille demandeSuppressionPortefeuille;
 	public DemandeAjoutIndice demandeAjoutIndice;
@@ -78,11 +72,6 @@ public class Controleur {
 		this.notificationChangementDeProjetCourant = new NotificationChangementDeProjetCourant();
 		this.notificationChangementIndiceCourant = new NotificationChangementIndiceCourant();
 		this.notificationChangementActionCourante = new NotificationChangementActionCourante();
-		this.observateurSuppressionPortefeuille = new ObservateurSuppressionPortefeuille();
-		this.observateurSuppressionIndice = new ObservateurSuppressionIndice();
-		this.observateurSuppressionAction = new ObservateurSuppressionAction();
-		this.observateurAjoutPortefeuille = new ObservateurAjoutPortefeuille();
-		this.observateurAjoutIndice = new ObservateurAjoutIndice();
 		
 		// Il faut créer les objets demandes (AbstractAction) avant l'interface.
 		this.creerDemandes();
@@ -112,13 +101,13 @@ public class Controleur {
 	
 	private void construireInterface() {
 		Locale.setDefault(Locale.FRANCE);
-		/*
+		
 		try {
 			UIManager.setLookAndFeel(new MetalLookAndFeel());
 		} catch (UnsupportedLookAndFeelException e) {
 			e.printStackTrace();
 		}
-		*/
+		
 		
 		this.fenetrePrincipale = new FenetrePrincipale(this);
 		
@@ -130,36 +119,18 @@ public class Controleur {
 	
 	public void changerDePortefeuilleActuel(Portefeuille nouveauPortefeuilleActuel) {
 		if (nouveauPortefeuilleActuel != this.portefeuilleActuel) {
-			if (this.portefeuilleActuel != null) {
-				//this.portefeuilleActuel.getNotificationActionSupprimee().deleteObserver(this.observateurSuppressionAction);
-			}
 			this.portefeuilleActuel = nouveauPortefeuilleActuel;
 			this.changerActionActuelle(null);
 			this.notificationChangementDePortefeuilleCourant.notifierChangementDePortefeuilleCourant(nouveauPortefeuilleActuel);
-			if (nouveauPortefeuilleActuel != null) {
-				//nouveauPortefeuilleActuel.getNotificationActionSupprimee().addObserver(this.observateurSuppressionAction);
-			}
 		}
 	}
 	
 	public void changerDeProjetActuel(Projet nouveauProjetActuel) {
 		if (nouveauProjetActuel != this.projetActuel) {
-			if (this.projetActuel != null) {
-				/*this.projetActuel.getNotificationPortefeuilleSupprime().deleteObserver(this.observateurSuppressionPortefeuille);
-				this.projetActuel.getNotificationIndiceSupprime().deleteObserver(this.observateurSuppressionIndice);
-				this.projetActuel.getNotificationPortefeuilleAjoute().deleteObserver(this.observateurAjoutPortefeuille);
-				this.projetActuel.getNotificationIndiceAjoute().deleteObserver(this.observateurAjoutIndice);*/
-			}
 			this.projetActuel = nouveauProjetActuel;
 			this.changerDePortefeuilleActuel(null);
 			this.changerIndiceActuel(null);
 			this.notificationChangementDeProjetCourant.notifierChangementDeProjetCourant(nouveauProjetActuel);
-			if (nouveauProjetActuel != null) {
-				/*nouveauProjetActuel.getNotificationPortefeuilleSupprime().addObserver(this.observateurSuppressionPortefeuille);
-				nouveauProjetActuel.getNotificationIndiceSupprime().addObserver(this.observateurSuppressionIndice);
-				nouveauProjetActuel.getNotificationPortefeuilleAjoute().addObserver(this.observateurAjoutPortefeuille);
-				nouveauProjetActuel.getNotificationIndiceAjoute().addObserver(this.observateurAjoutIndice);*/
-			}
 		}
 	}
 	
@@ -647,53 +618,6 @@ public class Controleur {
 		public void notifierChangementActionCourante(Action action) {
 			this.setChanged();
 			this.notifyObservers(action);
-		}
-	}
-	
-	private class ObservateurSuppressionPortefeuille implements Observer {
-		public void update(Observable arg0, Object arg1) {
-			Projet.NotificationPortefeuilleSupprime notificationPortefeuilleSupprime = projetActuel.getNotificationPortefeuilleSupprime();
-			if (notificationPortefeuilleSupprime == arg0) {
-				changerDePortefeuilleActuel(null);
-			}
-		}
-	}
-	
-	private class ObservateurSuppressionIndice implements Observer {
-		public void update(Observable arg0, Object arg1) {
-			Projet.NotificationIndiceSupprime notificationIndiceSupprime = projetActuel.getNotificationIndiceSupprime();
-			if (notificationIndiceSupprime == arg0) {
-				changerIndiceActuel(null);
-			}
-		}
-	}
-	
-	private class ObservateurSuppressionAction implements Observer {
-		public void update(Observable arg0, Object arg1) {
-			Portefeuille.NotificationActionSupprimee notificationActionSupprimee = portefeuilleActuel.getNotificationActionSupprimee();
-			if (notificationActionSupprimee == arg0) {
-				changerActionActuelle(null);
-			}
-		}
-	}
-	
-	private class ObservateurAjoutPortefeuille implements Observer {
-		public void update(Observable arg0, Object arg1) {
-			Projet.NotificationPortefeuilleAjoute notificationPortefeuilleAjoute = projetActuel.getNotificationPortefeuilleAjoute();
-			if (notificationPortefeuilleAjoute == arg0) {
-				Portefeuille portefeuilleAjoute = (Portefeuille)arg1;
-				changerDePortefeuilleActuel(portefeuilleAjoute);
-			}
-		}
-	}
-	
-	private class ObservateurAjoutIndice implements Observer {
-		public void update(Observable arg0, Object arg1) {
-			Projet.NotificationIndiceAjoute notificationIndiceAjoute = projetActuel.getNotificationIndiceAjoute();
-			if (notificationIndiceAjoute == arg0) {
-				Indice indiceAjoute = (Indice)arg1;
-				changerIndiceActuel(indiceAjoute);
-			}
 		}
 	}
 	
