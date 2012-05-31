@@ -20,6 +20,10 @@ public class VariationPourcent implements Serializable, Cloneable {
 		this.setValeur(valeur);
 	}
 	
+	public VariationPourcent(String variationPourcent) throws NumberFormatException {
+		this.parseVariationPourcent(variationPourcent);
+	}
+	
 	public String toString() {
 		String resultat = formatDecimal.format(this.getValeur()) + "%";
 		if (this.isPositif()) {
@@ -31,6 +35,12 @@ public class VariationPourcent implements Serializable, Cloneable {
 	
 	protected Object clone() {
 		return new VariationPourcent(this.getValeur());
+	}
+	
+	public void parseVariationPourcent(String variationPourcent) throws NumberFormatException {
+		// parse une chaine du type "+9.33%"
+		String decimalSeulement = variationPourcent.substring(0, variationPourcent.length()-1);
+		this.setValeur(Double.parseDouble(decimalSeulement));
 	}
 	
 	public double getValeur() {
@@ -61,7 +71,7 @@ public class VariationPourcent implements Serializable, Cloneable {
 	
 	/*
 	public static void main(String[] args) {
-		VariationPourcent v = new VariationPourcent(.09);
+		VariationPourcent v = new VariationPourcent("+65.8%");
 		System.out.println(v.toString());
 	}
 	*/

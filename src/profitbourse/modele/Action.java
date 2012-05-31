@@ -1,10 +1,11 @@
 package profitbourse.modele;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Observable;
 
-import profitbourse.modele.majaleatoire.GestionnaireMajWeb;
+import profitbourse.modele.majthomas.GestionnaireMajWeb;
 
 
 public class Action implements Serializable {
@@ -42,13 +43,17 @@ public class Action implements Serializable {
 	}
 	
 	public void premiereMajWeb() {
-		GestionnaireMajWeb.majAction(this);
+		ArrayList<Action> arrayList = new ArrayList<Action>();
+		arrayList.add(this);
+		GestionnaireMajWeb.majActions(arrayList);
 		this.coursAchat = (Money)this.getCoursActuel().clone();
 		this.notificationModificationAction.notifierModificationAction(this);
 	}
 	
 	public void majWeb() {
-		GestionnaireMajWeb.majAction(this);
+		ArrayList<Action> arrayList = new ArrayList<Action>();
+		arrayList.add(this);
+		GestionnaireMajWeb.majActions(arrayList);
 		this.notificationModificationAction.notifierModificationAction(this);
 	}
 	

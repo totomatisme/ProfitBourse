@@ -17,7 +17,7 @@ import javax.swing.JTextField;
 
 import profitbourse.modele.Action;
 import profitbourse.modele.Portefeuille.ActionDejaPresenteDansLePortefeuille;
-import profitbourse.modele.majaleatoire.GestionnaireMajWeb;
+import profitbourse.modele.majthomas.GestionnaireMajWeb;
 import profitbourse.vue.Controleur;
 
 public class DialogNouvelleAction extends JDialog {

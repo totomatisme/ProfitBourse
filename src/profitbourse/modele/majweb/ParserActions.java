@@ -48,7 +48,7 @@ public class ParserActions {
 			
 			///////////////////////DOUTE SUR LE it.next(), DECALAGE ?
 			Iterator<Action> it = portefeuille.getActions().iterator();
-			it.next().majCoursEtVariation(cours,variation);
+			//it.next().majCoursEtVariation(cours,variation);
 
 			
 		}

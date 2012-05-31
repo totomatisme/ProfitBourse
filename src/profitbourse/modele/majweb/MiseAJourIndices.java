@@ -113,7 +113,7 @@ public class MiseAJourIndices {
 				
 				///////////////////////DOUTE SUR LE it.next(), DECALAGE ?
 				Iterator<Indice> it = projet.getIndices().iterator();
-				it.next().majCoursEtVariation(cours,variation);
+				//it.next().majCoursEtVariation(cours,variation);
 
 				
 			}

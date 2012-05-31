@@ -50,6 +50,7 @@ public class Controleur {
 	
 	public DemandeAjoutPortefeuille demandeAjoutPortefeuille;
 	public DemandeSuppressionPortefeuille demandeSuppressionPortefeuille;
+	public DemandeMajIndices demandeMajIndices;
 	public DemandeAjoutIndice demandeAjoutIndice;
 	public DemandeSuppressionIndice demandeSuppressionIndice;
 	public DemandeAjoutAction demandeAjoutAction;
@@ -85,6 +86,7 @@ public class Controleur {
 		this.demandeAjoutPortefeuille = new DemandeAjoutPortefeuille();
 		this.demandeSuppressionPortefeuille = new DemandeSuppressionPortefeuille();
 		this.demandeSuppressionIndice = new DemandeSuppressionIndice();
+		this.demandeMajIndices = new DemandeMajIndices();
 		this.demandeAjoutIndice = new DemandeAjoutIndice();
 		this.demandeAjoutAction = new DemandeAjoutAction();
 		this.demandeSuppressionAction = new DemandeSuppressionAction();
@@ -250,6 +252,31 @@ public class Controleur {
 			public void update(Observable arg0, Object arg1) {
 				Portefeuille nouveauPortefeuille = (Portefeuille)arg1;
 				if (nouveauPortefeuille == null) {
+					setEnabled(false);
+				} else {
+					setEnabled(true);
+				}
+			}
+		}
+	}
+	
+	public class DemandeMajIndices extends AbstractAction {
+		private static final long serialVersionUID = 3051413672367470666L;
+		private ObservateurChangementDeProjetCourant observateurChangementDeProjetCourant;
+		public DemandeMajIndices() {
+			super("⟲");
+			this.putValue(SHORT_DESCRIPTION, "Mettre à jour les indices");
+			this.setEnabled(false);
+			this.observateurChangementDeProjetCourant = new ObservateurChangementDeProjetCourant();
+			getNotificationChangementDeProjetCourant().addObserver(this.observateurChangementDeProjetCourant);
+		}
+		public void actionPerformed(ActionEvent arg0) {
+			projetActuel.majTousLesIndices();
+		}
+		private class ObservateurChangementDeProjetCourant implements Observer {
+			public void update(Observable arg0, Object arg1) {
+				Projet projet = (Projet)arg1;
+				if (projet == null) {
 					setEnabled(false);
 				} else {
 					setEnabled(true);

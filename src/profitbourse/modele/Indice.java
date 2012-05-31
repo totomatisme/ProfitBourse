@@ -1,9 +1,10 @@
 package profitbourse.modele;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Observable;
 
-import profitbourse.modele.majaleatoire.GestionnaireMajWeb;
+import profitbourse.modele.majthomas.GestionnaireMajWeb;
 
 public class Indice implements Serializable {
 
@@ -34,7 +35,9 @@ public class Indice implements Serializable {
 	}
 	
 	public void majWeb() {
-		GestionnaireMajWeb.majIndice(this);
+		ArrayList<Indice> arrayList = new ArrayList<Indice>();
+		arrayList.add(this);
+		GestionnaireMajWeb.majIndices(arrayList);
 		this.notificationModificationIndice.notifierModificationIndice(this);
 	}
 	

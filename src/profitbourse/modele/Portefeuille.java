@@ -8,7 +8,7 @@ import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
 
-import profitbourse.modele.majaleatoire.GestionnaireMajWeb;
+import profitbourse.modele.majthomas.GestionnaireMajWeb;
 
 
 public class Portefeuille implements Serializable {
@@ -89,10 +89,7 @@ public class Portefeuille implements Serializable {
 	}
 	
 	public void majToutesLesActions() {
-		Iterator<Action> it = this.getActions().iterator();
-		while (it.hasNext()) {
-			GestionnaireMajWeb.majAction(it.next());
-		}
+		GestionnaireMajWeb.majActions(this.getActions());
 		this.notificationMajActions.notifierMajActions();
 	}
 	

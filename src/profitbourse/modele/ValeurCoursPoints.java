@@ -17,12 +17,21 @@ public class ValeurCoursPoints implements Serializable, Cloneable {
 		this.setValeur(valeur);
 	}
 	
+	public ValeurCoursPoints(String valeurCoursPoints) throws NumberFormatException {
+		this.parseValeurCoursPoints(valeurCoursPoints);
+	}
+	
 	public String toString() {
 		return formatDecimal.format(this.getValeur()) + " pts";
 	}
 	
 	protected Object clone() {
 		return new ValeurCoursPoints(this.getValeur());
+	}
+	
+	public void parseValeurCoursPoints(String valeurCoursPoints) throws NumberFormatException {
+		// parse une chaine du type "3022.12"
+		this.setValeur(Double.parseDouble(valeurCoursPoints));
 	}
 
 	public double getValeur() {
@@ -35,7 +44,7 @@ public class ValeurCoursPoints implements Serializable, Cloneable {
 	
 	/*
 	public static void main(String[] args) {
-		ValeurCoursPoints v = new ValeurCoursPoints(100909.09998);
+		ValeurCoursPoints v = new ValeurCoursPoints("100909.09998");
 		System.out.println(v.toString());
 	}
 	*/

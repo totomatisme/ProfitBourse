@@ -1,8 +1,6 @@
 package profitbourse.vue.barredemenu;
 
-import javax.swing.AbstractAction;
 import javax.swing.JMenu;
-import javax.swing.JMenuItem;
 
 import profitbourse.vue.Controleur;
 
@@ -17,6 +15,8 @@ public class MenuProjet extends JMenu {
 	
 	private MenuItemIntelligent itemAjouterIndice;
 	private MenuItemIntelligent itemSupprimerindice;
+	
+	private MenuItemIntelligent itemMajIndices;
 	
 	public MenuProjet(Controleur controleur) {
 		super("Projet");
@@ -35,6 +35,11 @@ public class MenuProjet extends JMenu {
 		
 		this.itemSupprimerindice = new MenuItemIntelligent(this.controleur.demandeSuppressionIndice);
 		this.add(this.itemSupprimerindice);
+		
+		this.addSeparator();
+		
+		this.itemMajIndices = new MenuItemIntelligent(this.controleur.demandeMajIndices);
+		this.add(this.itemMajIndices);
 	}
 	
 }

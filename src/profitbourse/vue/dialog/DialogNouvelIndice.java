@@ -16,7 +16,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import profitbourse.modele.Indice;
-import profitbourse.modele.majaleatoire.GestionnaireMajWeb;
+import profitbourse.modele.majthomas.GestionnaireMajWeb;
 import profitbourse.vue.Controleur;
 
 public class DialogNouvelIndice extends JDialog {

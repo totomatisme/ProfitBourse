@@ -13,10 +13,14 @@ public class PanelBoutonsAjoutSuppressionIndice extends JPanel {
 	private Controleur controleur;
 	private JButton boutonAjouterIndice;
 	private JButton boutonSupprimerIndice;
+	private JButton boutonMajIndices;
 	
 	public PanelBoutonsAjoutSuppressionIndice(Controleur controleur) {
 		super(new FlowLayout(FlowLayout.RIGHT));
 		this.controleur = controleur;
+		
+		this.boutonMajIndices = new JButton(this.controleur.demandeMajIndices);
+		this.add(this.boutonMajIndices);
 		
 		this.boutonAjouterIndice = new JButton(this.controleur.demandeAjoutIndice);
 		this.add(this.boutonAjouterIndice);
