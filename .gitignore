@@ -1,6 +1,7 @@
 *.class
 doc
 bin
+lib
 
 # Mac Os #
 .DS_Store
