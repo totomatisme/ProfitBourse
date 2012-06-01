@@ -9,6 +9,7 @@ import profitbourse.vue.colonnegauche.haut.PanelColonneGaucheHaut;
 public class SplitPaneColonneGauche extends JSplitPane {
 
 	private static final long serialVersionUID = -1760745785472907036L;
+	@SuppressWarnings("unused")
 	private Controleur controleur;
 	private PanelColonneGaucheBas panelColonneGaucheBas;
 	private PanelColonneGaucheHaut panelColonneGaucheHaut;

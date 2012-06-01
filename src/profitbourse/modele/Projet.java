@@ -7,7 +7,7 @@ import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
 
-import profitbourse.modele.majthomas.GestionnaireMajWeb;
+import profitbourse.modele.majweb.GestionnaireMajWeb;
 import profitbourse.modele.preferences.GestionnairePreferences;
 
 public class Projet implements Serializable {

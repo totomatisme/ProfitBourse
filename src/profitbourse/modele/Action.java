@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Observable;
 
-import profitbourse.modele.majthomas.GestionnaireMajWeb;
+import profitbourse.modele.majweb.GestionnaireMajWeb;
 
 
 public class Action implements Serializable {

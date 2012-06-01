@@ -8,7 +8,7 @@ import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
 
-import profitbourse.modele.majthomas.GestionnaireMajWeb;
+import profitbourse.modele.majweb.GestionnaireMajWeb;
 
 
 public class Portefeuille implements Serializable {

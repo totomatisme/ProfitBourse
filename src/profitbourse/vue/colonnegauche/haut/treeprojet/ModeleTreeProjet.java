@@ -11,6 +11,7 @@ import profitbourse.vue.Controleur;
 
 public class ModeleTreeProjet extends AbstractTreeModel {
 
+	@SuppressWarnings("unused")
 	private Controleur controleur;
 	private Projet projet;
 	private ObservateurAjoutPortefeuille observateurAjoutPortefeuille;

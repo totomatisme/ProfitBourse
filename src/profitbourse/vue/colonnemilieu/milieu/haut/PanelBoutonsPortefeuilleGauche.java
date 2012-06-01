@@ -1,6 +1,5 @@
 package profitbourse.vue.colonnemilieu.milieu.haut;
 
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 
 import javax.swing.JButton;

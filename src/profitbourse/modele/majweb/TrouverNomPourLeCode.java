@@ -1,4 +1,4 @@
-package profitbourse.modele.majthomas;
+package profitbourse.modele.majweb;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,9 +8,9 @@ import java.net.URL;
 
 import au.com.bytecode.opencsv.CSVParser;
 
-import profitbourse.modele.majthomas.CodeNeCorrespondPasAuCodeDeYahoo;
-import profitbourse.modele.majthomas.EchecDuParser;
-import profitbourse.modele.majthomas.ProblemeChargementPageWeb;
+import profitbourse.modele.majweb.CodeNeCorrespondPasAuCodeDeYahoo;
+import profitbourse.modele.majweb.EchecDuParser;
+import profitbourse.modele.majweb.ProblemeChargementPageWeb;
 
 public class TrouverNomPourLeCode {
 
@@ -30,11 +30,11 @@ public class TrouverNomPourLeCode {
 		String nom = null;
 		try {
 			BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
-			System.out.println("Nouvelle page yahoo demandée :");
+			System.out.println("Nouvelle page yahoo demandée : " + url.toString());
 			String inputLine = in.readLine();
 			nom = this.parserLigne(inputLine);
 			System.out.println(inputLine);
-			System.out.println("Fin de la page.");
+			System.out.println("Fin de la page.\n");
 			in.close();
 		} catch (IOException e) {
 			e.printStackTrace();

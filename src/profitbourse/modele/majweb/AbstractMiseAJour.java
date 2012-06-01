@@ -1,4 +1,4 @@
-package profitbourse.modele.majthomas;
+package profitbourse.modele.majweb;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -37,7 +37,7 @@ public abstract class AbstractMiseAJour {
 			// On récupère la page Web et on la traite itérativement
 			try {
 				BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
-				System.out.println("Nouvelle page yahoo demandée :");
+				System.out.println("Nouvelle page yahoo demandée : " + url.toString());
 				int indiceArrayListe = 0;
 				String inputLine = null;
 				while ((inputLine = in.readLine()) != null) {
@@ -45,7 +45,7 @@ public abstract class AbstractMiseAJour {
 					this.parserLigne(inputLine, this.arrayList.get(indiceArrayListe));
 					indiceArrayListe++;
 				}
-				System.out.println("Fin de la page.");
+				System.out.println("Fin de la page.\n");
 				in.close();
 			} catch (IOException e) {
 				e.printStackTrace();
