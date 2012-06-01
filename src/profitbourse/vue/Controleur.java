@@ -78,7 +78,7 @@ public class Controleur {
 		this.creerDemandes();
 		// On crée l'interface.
 		this.construireInterface();
-		// On lance le mode condole.
+		// On lance le mode console.
 		this.menuPrincipalConsole();
 	}
 	
@@ -194,6 +194,15 @@ public class Controleur {
 				JOptionPane.ERROR_MESSAGE);
 	}
 	
+	public void afficherUneErreur(Exception e) {
+		String message = e.getMessage();
+		if (message == null) {
+			this.afficherUneErreur("Une erreur s'est produite !");
+		} else {
+			this.afficherUneErreur(message);
+		}
+	}
+	
 	// DEMANDES
 	
 	public class DemandeAjoutPortefeuille extends AbstractAction {
@@ -271,7 +280,12 @@ public class Controleur {
 			getNotificationChangementDeProjetCourant().addObserver(this.observateurChangementDeProjetCourant);
 		}
 		public void actionPerformed(ActionEvent arg0) {
-			projetActuel.majTousLesIndices();
+			try {
+				projetActuel.majTousLesIndices();
+			} catch (Exception e) {
+				e.printStackTrace();
+				afficherUneErreur(e);
+			}
 		}
 		private class ObservateurChangementDeProjetCourant implements Observer {
 			public void update(Observable arg0, Object arg1) {
@@ -450,7 +464,12 @@ public class Controleur {
 			getNotificationChangementDePortefeuilleCourant().addObserver(this.observateurChangementDePortefeuilleCourant);
 		}
 		public void actionPerformed(ActionEvent arg0) {
-			portefeuilleActuel.majToutesLesActions();
+			try {
+				portefeuilleActuel.majToutesLesActions();
+			} catch (Exception e) {
+				e.printStackTrace();
+				afficherUneErreur(e);
+			}
 		}
 		private class ObservateurChangementDePortefeuilleCourant implements Observer {
 			public void update(Observable arg0, Object arg1) {
@@ -863,7 +882,12 @@ public class Controleur {
 				}
 				Indice nouvelIndice = new Indice(nomIndice, codeIndice, this.projetActuel);
 				this.projetActuel.ajouterNouvelIndice(nouvelIndice);
-				nouvelIndice.majWeb();
+				try {
+					nouvelIndice.majWeb();
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 				System.out.println("L'indice '" + nouvelIndice.getNom() + "' a été ajouté.");
 				break;
 				
@@ -888,7 +912,12 @@ public class Controleur {
 				break;
 				
 			case 'm':
-				this.projetActuel.majTousLesPortefeuillesEtIndices();
+				try {
+					this.projetActuel.majTousLesPortefeuillesEtIndices();
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 				System.out.println("Mise à jour des portefeuilles et des indices du projet effectuée.");
 				System.out.println(this.projetActuel.projetEtPortefeuillesEtIndicesToString());
 				break;
@@ -1003,7 +1032,12 @@ public class Controleur {
 				} catch (ActionDejaPresenteDansLePortefeuille e1) {
 					e1.printStackTrace();
 				}
-				nouvelleAction.premiereMajWeb();
+				try {
+					nouvelleAction.premiereMajWeb();
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 				System.out.println("L'action '" + nouvelleAction.getNom() + "' a été ajoutée.");
 				break;
 				
@@ -1028,7 +1062,12 @@ public class Controleur {
 				break;
 				
 			case 'm':
-				this.portefeuilleActuel.majToutesLesActions();
+				try {
+					this.portefeuilleActuel.majToutesLesActions();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				System.out.println("Mise à jour des actions effectuée.");
 				System.out.println(this.portefeuilleActuel.portefeuilleEtActionsToString());
 				break;

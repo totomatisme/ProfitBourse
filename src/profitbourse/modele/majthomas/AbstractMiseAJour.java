@@ -71,16 +71,28 @@ public abstract class AbstractMiseAJour {
 
 class ProblemeChargementPageWeb extends Exception {
 	private static final long serialVersionUID = 3732603499614830865L;
+	public ProblemeChargementPageWeb() {
+		super("Il y a eu un problème lors du chargement de la page Web de Yahoo.");
+	}
 }
 
 class MiseAJourArrayListVideOuNull extends Exception {
 	private static final long serialVersionUID = -7748211873914794145L;
+	public MiseAJourArrayListVideOuNull() {
+		super("Pas d'action ou d'indice à mettre à jour.");
+	}
 }
 
 class EchecDuParser extends Exception {
 	private static final long serialVersionUID = 8447309210674959240L;
+	public EchecDuParser() {
+		super("La page Web renvoyée par Yahoo n'a pas pu être parsée.");
+	}
 }
 
 class CodeNeCorrespondPasAuCodeDeYahoo extends Exception {
 	private static final long serialVersionUID = 32345954516649653L;
+	public CodeNeCorrespondPasAuCodeDeYahoo() {
+		super("Yahoo a renvoyé les valeurs des quotations dans un ordre incorrect. Les codes ne correspondent pas.");
+	}
 }

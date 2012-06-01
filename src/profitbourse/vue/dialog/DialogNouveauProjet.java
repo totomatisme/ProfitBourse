@@ -85,16 +85,25 @@ public class DialogNouveauProjet extends JDialog {
 	
 	private class DemandeCreation implements ActionListener {
 		public void actionPerformed(ActionEvent arg0) {
-			String nom = texteNom.getText();
-			if (nom.equals("")) {
-				controleur.afficherUneErreur("Le nom est vide !");
-				return;
+			try {
+				String nom = texteNom.getText();
+				if (nom.equals("")) throw new ErreurNomVide();
+				
+				Projet nouveauProjet = new Projet(nom);
+				controleur.changerDeProjetActuel(nouveauProjet);
+				dispose();
+			} catch (Exception e) {
+				controleur.afficherUneErreur(e);
+				e.printStackTrace();
 			}
-			
-			Projet nouveauProjet = new Projet(nom);
-			controleur.changerDeProjetActuel(nouveauProjet);
-			dispose();
 		}
 	}
 	
+}
+
+class ErreurNomVide extends Exception {
+	private static final long serialVersionUID = 8447309210674959240L;
+	public ErreurNomVide() {
+		super("Le nom est vide !");
+	}
 }

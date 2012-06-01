@@ -93,24 +93,24 @@ public class DialogVendreEnPartieAction extends JDialog {
 	
 	private class DemandeVendre implements ActionListener {
 		public void actionPerformed(ActionEvent arg0) {
-			String quantiteString = texteQuantite.getText();
-			int quantite = 0;
 			try {
-				quantite = Integer.parseInt(quantiteString);
-			} catch (NumberFormatException e) {
-				controleur.afficherUneErreur("La quantité '" + quantiteString + "' ne correspond par à un entier !");
-				return;
+				String quantiteString = texteQuantite.getText();
+				int quantite = 0;
+				try {
+					quantite = Integer.parseInt(quantiteString);
+				} catch (NumberFormatException e) {
+					throw new Exception("La quantité '" + quantiteString + "' ne correspond par à un entier !");
+				}
+				
+				if (quantite < 0) throw new Exception("La quantité '" + quantiteString + "' est négative !");
+				if (quantite > controleur.getActionActuelle().getQuantite()) throw new Exception("La quantité '" + quantiteString + "' est supérieure à " + controleur.getActionActuelle().getQuantite() + " !");
+				
+				controleur.getActionActuelle().vendreEnPartieAction(quantite);
+				dispose();
+			} catch (Exception e) {
+				controleur.afficherUneErreur(e);
+				e.printStackTrace();
 			}
-			if (quantite < 0) {
-				controleur.afficherUneErreur("La quantité '" + quantiteString + "' est négative !");
-				return;
-			}
-			if (quantite > controleur.getActionActuelle().getQuantite()) {
-				controleur.afficherUneErreur("La quantité '" + quantiteString + "' est supérieure à " + controleur.getActionActuelle().getQuantite() + " !");
-				return;
-			}
-			controleur.getActionActuelle().vendreEnPartieAction(quantite);
-			dispose();
 		}
 	}
 	

@@ -36,15 +36,20 @@ public class MiseAJourActions extends AbstractMiseAJour {
 		CSVParser parser = new CSVParser(',', '"');
 		String[] contenu = null;
 		
+
+		String code = null;
+		String cours = null;
+		String variation = null;
+		
 		try {
 			contenu = parser.parseLine(ligne);
+			
+			code = contenu[0];
+			cours = contenu[1];
+			variation = contenu[2];
 		} catch (Exception e) {
 			throw new EchecDuParser();
 		}
-		
-		String code = contenu[0];
-		String cours = contenu[1];
-		String variation = contenu[2];
 		
 		// Si le code n'est pas bon c'est qu'il y a un serieux problème !
 		if (!actionTraitee.getCodeISIN().equals(code)) {

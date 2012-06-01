@@ -107,25 +107,26 @@ public class DialogNouveauPortefeuille extends JDialog {
 	
 	private class DemandeAjout implements ActionListener {
 		public void actionPerformed(ActionEvent arg0) {
-			String nom = texteNom.getText();
-			if (nom.equals("")) {
-				controleur.afficherUneErreur("Le nom est vide !");
-				return;
-			}
-			
-			String deviseString = (String)comboChoixDevise.getSelectedItem();
-			Currency devise = null;
 			try {
-				devise = Currency.getInstance(deviseString);
-			} catch (IllegalArgumentException e) {
-				controleur.afficherUneErreur("La devise '" + deviseString + "' ne correspond pas à une devise connue !");
-				return;
+				String nom = texteNom.getText();
+				if (nom.equals("")) throw new ErreurNomVide();
+				
+				String deviseString = (String)comboChoixDevise.getSelectedItem();
+				Currency devise = null;
+				try {
+					devise = Currency.getInstance(deviseString);
+				} catch (IllegalArgumentException e) {
+					throw new Exception("La devise '" + deviseString + "' ne correspond pas à une devise connue !");
+				}
+				
+				Portefeuille nouveauPortefeuille = new Portefeuille(nom, devise, controleur.getProjetActuel());
+				controleur.getProjetActuel().ajouterNouveauPortefeuille(nouveauPortefeuille);
+				controleur.changerDePortefeuilleActuel(nouveauPortefeuille);
+				dispose();
+			} catch (Exception e) {
+				controleur.afficherUneErreur(e);
+				e.printStackTrace();
 			}
-			
-			Portefeuille nouveauPortefeuille = new Portefeuille(nom, devise, controleur.getProjetActuel());
-			controleur.getProjetActuel().ajouterNouveauPortefeuille(nouveauPortefeuille);
-			controleur.changerDePortefeuilleActuel(nouveauPortefeuille);
-			dispose();
 		}
 	}
 	

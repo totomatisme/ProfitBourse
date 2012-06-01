@@ -34,7 +34,7 @@ public class Indice implements Serializable {
 		this.notificationModificationIndice.addObserver(this.projet.getObservateurModificationIndice());
 	}
 	
-	public void majWeb() {
+	public void majWeb() throws Exception {
 		ArrayList<Indice> arrayList = new ArrayList<Indice>();
 		arrayList.add(this);
 		GestionnaireMajWeb.majIndices(arrayList);

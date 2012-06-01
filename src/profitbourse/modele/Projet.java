@@ -98,7 +98,7 @@ public class Projet implements Serializable {
 		}
 	}
 	
-	public void majTousLesPortefeuillesEtIndices() {
+	public void majTousLesPortefeuillesEtIndices() throws Exception {
 		Iterator<Portefeuille> it = this.getPortefeuilles().iterator();
 		while (it.hasNext()) {
 			it.next().majToutesLesActions();
@@ -106,7 +106,7 @@ public class Projet implements Serializable {
 		this.majTousLesIndices();
 	}
 	
-	public void majTousLesIndices() {
+	public void majTousLesIndices() throws Exception {
 		GestionnaireMajWeb.majIndices(this.getIndices());
 		this.notificationMajIndices.notifierMajIndices();
 	}

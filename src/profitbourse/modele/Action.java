@@ -42,7 +42,7 @@ public class Action implements Serializable {
 		this.notificationModificationAction.addObserver(this.portefeuille.getObservateurModificationAction());
 	}
 	
-	public void premiereMajWeb() {
+	public void premiereMajWeb() throws Exception {
 		ArrayList<Action> arrayList = new ArrayList<Action>();
 		arrayList.add(this);
 		GestionnaireMajWeb.majActions(arrayList);
@@ -50,7 +50,7 @@ public class Action implements Serializable {
 		this.notificationModificationAction.notifierModificationAction(this);
 	}
 	
-	public void majWeb() {
+	public void majWeb() throws Exception {
 		ArrayList<Action> arrayList = new ArrayList<Action>();
 		arrayList.add(this);
 		GestionnaireMajWeb.majActions(arrayList);

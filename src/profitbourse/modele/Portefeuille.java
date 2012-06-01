@@ -88,7 +88,7 @@ public class Portefeuille implements Serializable {
 		}
 	}
 	
-	public void majToutesLesActions() {
+	public void majToutesLesActions() throws Exception {
 		GestionnaireMajWeb.majActions(this.getActions());
 		this.notificationMajActions.notifierMajActions();
 	}
@@ -133,10 +133,16 @@ public class Portefeuille implements Serializable {
 	
 	public class ActionNonPresenteDansLePortefeuille extends Exception {
 		private static final long serialVersionUID = -4261702974891478570L;
+		public ActionNonPresenteDansLePortefeuille() {
+			super("L'action n'est pas présente dans le portefeuille !");
+		}
 	}
 	
 	public class ActionDejaPresenteDansLePortefeuille extends Exception {
 		private static final long serialVersionUID = 1650795751351991726L;
+		public ActionDejaPresenteDansLePortefeuille() {
+			super("L'action est déjà présente dans le portefeuille !");
+		}
 	}
 	
 	public class NotificationActionAjoutee extends Observable {

@@ -48,14 +48,17 @@ public class TrouverNomPourLeCode {
 		CSVParser parser = new CSVParser(',', '"');
 		String[] contenu = null;
 		
+		String codeObtenu = null;
+		String nomObtenu = null;
+		
 		try {
 			contenu = parser.parseLine(ligne);
+			
+			codeObtenu = contenu[0];
+			nomObtenu = contenu[1];
 		} catch (Exception e) {
 			throw new EchecDuParser();
 		}
-		
-		String codeObtenu = contenu[0];
-		String nomObtenu = contenu[1];
 		
 		// Si le code n'est pas bon c'est qu'il y a un serieux problème !
 		if (!this.code.equals(codeObtenu)) {

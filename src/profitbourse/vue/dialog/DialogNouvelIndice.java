@@ -115,34 +115,49 @@ public class DialogNouvelIndice extends JDialog {
 	
 	private class DemandeAjout implements ActionListener {
 		public void actionPerformed(ActionEvent arg0) {
-			String code = texteCode.getText();
-			if (code.equals("")) {
-				controleur.afficherUneErreur("Le code est vide !");
-				return;
-			}
-			
-			String nom = "";
-			if (checkEntrerNomManuellement.isSelected()) {
-				nom = texteNom.getText();
-				if (nom.equals("")) {
-					controleur.afficherUneErreur("Le nom est vide !");
-					return;
+			try {
+				String code = texteCode.getText();
+				if (code.equals("")) throw new ErreurCodeVide();
+				
+				String nom = "";
+				if (checkEntrerNomManuellement.isSelected()) {
+					nom = texteNom.getText();
+					if (nom.equals("")) throw new ErreurNomVide();
+				} else {
+					try {
+						nom = GestionnaireMajWeb.obtenirNomIndicePourLeCode(code);
+						if (nom == null) throw new ErreurCodeInconnu();
+					} catch (Exception e) {
+						e.printStackTrace();
+						throw new ErreurCodeInconnu();
+					}
 				}
-			} else {
-				nom = GestionnaireMajWeb.obtenirNomIndicePourLeCode(code);
-				if (nom == null) {
-					controleur.afficherUneErreur("Le code ne correspond pas à un code connu !");
-					return;
-				}
+				
+				Indice nouvelIndice = new Indice(nom, code, controleur.getProjetActuel());
+				controleur.getProjetActuel().ajouterNouvelIndice(nouvelIndice);
+				controleur.changerIndiceActuel(nouvelIndice);
+			
+				nouvelIndice.majWeb();
+				dispose();
+			} catch (Exception e) {
+				controleur.afficherUneErreur(e);
+				e.printStackTrace();
 			}
-			
-			Indice nouvelIndice = new Indice(nom, code, controleur.getProjetActuel());
-			controleur.getProjetActuel().ajouterNouvelIndice(nouvelIndice);
-			controleur.changerIndiceActuel(nouvelIndice);
-			nouvelIndice.majWeb();
-			dispose();
-			
 		}
 	}
 	
+}
+
+class ErreurCodeVide extends Exception {
+	private static final long serialVersionUID = 8447309210674959240L;
+	public ErreurCodeVide() {
+		super("Le code est vide !");
+	}
+}
+
+class ErreurCodeInconnu extends Exception {
+	private static final long serialVersionUID = 1603078476899366696L;
+	public ErreurCodeInconnu() {
+		super("Le code ne correspond pas à un code connu !");
+	}
 }

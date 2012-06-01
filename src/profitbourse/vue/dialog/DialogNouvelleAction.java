@@ -16,7 +16,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import profitbourse.modele.Action;
-import profitbourse.modele.Portefeuille.ActionDejaPresenteDansLePortefeuille;
 import profitbourse.modele.majthomas.GestionnaireMajWeb;
 import profitbourse.vue.Controleur;
 
@@ -129,51 +128,45 @@ public class DialogNouvelleAction extends JDialog {
 	
 	private class DemandeAjout implements ActionListener {
 		public void actionPerformed(ActionEvent arg0) {
-			String code = texteCode.getText();
-			if (code.equals("")) {
-				controleur.afficherUneErreur("Le code est vide !");
-				return;
-			}
-			
-			String nom = "";
-			if (checkEntrerNomManuellement.isSelected()) {
-				nom = texteNom.getText();
-				if (nom.equals("")) {
-					controleur.afficherUneErreur("Le nom est vide !");
-					return;
-				}
-			} else {
-				nom = GestionnaireMajWeb.obtenirNomActionPourLeCode(code);
-				if (nom == null) {
-					controleur.afficherUneErreur("Le code ne correspond pas à un code connu !");
-					return;
-				}
-			}
-			
-			String quantiteString = texteQuantite.getText();
-			int quantite = 0;
 			try {
-				quantite = Integer.parseInt(quantiteString);
-			} catch (NumberFormatException e) {
-				controleur.afficherUneErreur("La quantité '" + quantiteString + "' ne correspond par à un entier !");
-				return;
-			}
-			if (quantite < 0) {
-				controleur.afficherUneErreur("La quantité '" + quantiteString + "' est négative !");
-				return;
-			}
+				String code = texteCode.getText();
+				if (code.equals("")) throw new ErreurCodeVide();
+				
+				String nom = "";
+				if (checkEntrerNomManuellement.isSelected()) {
+					nom = texteNom.getText();
+					if (nom.equals("")) throw new ErreurNomVide();
+				} else {
+					try {
+						nom = GestionnaireMajWeb.obtenirNomActionPourLeCode(code);
+						if (nom == null) throw new ErreurCodeInconnu();
+					} catch (Exception e) {
+						e.printStackTrace();
+						throw new ErreurCodeInconnu();
+					}
+				}
+				
+				String quantiteString = texteQuantite.getText();
+				int quantite = 0;
+				try {
+					quantite = Integer.parseInt(quantiteString);
+				} catch (NumberFormatException e) {
+					throw new Exception("La quantité '" + quantiteString + "' ne correspond par à un entier !");
+				}
+				if (quantite < 0) throw new Exception("La quantité '" + quantiteString + "' est négative !");
+				
+				Action nouvelleAction = new Action(nom, code, quantite, controleur.getPortefeuilleActuel());
 			
-			Action nouvelleAction = new Action(nom, code, quantite, controleur.getPortefeuilleActuel());
-			try {
 				controleur.getPortefeuilleActuel().ajouterNouvelleAction(nouvelleAction);
-			} catch (ActionDejaPresenteDansLePortefeuille e) {
-				controleur.afficherUneErreur("L'action est déjà présente dans le portefeuille !");
+				controleur.changerActionActuelle(nouvelleAction);
+				nouvelleAction.premiereMajWeb();
+				
+				dispose();
+			} catch (Exception e) {
+				controleur.afficherUneErreur(e);
 				e.printStackTrace();
 				return;
 			}
-			controleur.changerActionActuelle(nouvelleAction);
-			nouvelleAction.premiereMajWeb();
-			dispose();
 		}
 	}
 
