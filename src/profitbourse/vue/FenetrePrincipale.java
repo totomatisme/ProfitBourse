@@ -23,6 +23,7 @@ public class FenetrePrincipale extends JFrame {
 		
 		this.fenetreListener = new FenetreListener();
 		this.addWindowListener(this.fenetreListener);
+		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		
 		int hauteurFenetre = GestionnairePreferences.getHauteurFenetre();
 		int largeurFenetre = GestionnairePreferences.getLargeurFenetre();

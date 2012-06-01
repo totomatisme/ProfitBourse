@@ -623,11 +623,18 @@ public class Controleur {
 			this.putValue(SHORT_DESCRIPTION, "Quitter ProfitBourse");
 		}
 		public void actionPerformed(ActionEvent e) {
-			Dimension tailleFenetre = fenetrePrincipale.getSize();
-			GestionnairePreferences.setHauteurFenetre(tailleFenetre.height);
-			GestionnairePreferences.setLargeurFenetre(tailleFenetre.width);
-			//System.out.println(tailleFenetre.toString());
-			System.exit(0);
+			int reponse = JOptionPane.showConfirmDialog(
+					fenetrePrincipale,
+					"Voulez-vous vraiment quitter ProfitBourse ?",
+					"Quitter",
+					JOptionPane.OK_CANCEL_OPTION,
+					JOptionPane.WARNING_MESSAGE);
+			if (reponse == JOptionPane.OK_OPTION) {
+				Dimension tailleFenetre = fenetrePrincipale.getSize();
+				GestionnairePreferences.setHauteurFenetre(tailleFenetre.height);
+				GestionnairePreferences.setLargeurFenetre(tailleFenetre.width);
+				System.exit(0);
+			}
 		}
 	}
 	
