@@ -53,7 +53,7 @@ public class MiseAJourActions extends AbstractMiseAJour {
 		
 		// Si le code n'est pas bon c'est qu'il y a un serieux problème !
 		if (!actionTraitee.getCodeISIN().equals(code)) {
-			throw new CodeNeCorrespondPasAuCodeDeYahoo();
+			throw new CodeNeCorrespondPasAuCodeDeYahoo(actionTraitee.getCodeISIN(), code);
 		}
 		
 		Money coursMoney = new Money(new BigDecimal(cours).setScale(2,RoundingMode.HALF_EVEN), actionTraitee.getPortefeuille().getDevise());

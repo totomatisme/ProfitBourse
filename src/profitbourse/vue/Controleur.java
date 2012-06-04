@@ -189,6 +189,7 @@ public class Controleur {
 	}
 	
 	public void afficherUneErreur(Exception e) {
+		//String classeDescription = e.getClass().toString() + " :\n";
 		String message = e.getMessage();
 		if (message == null) {
 			this.afficherUneErreur("Une erreur s'est produite !");

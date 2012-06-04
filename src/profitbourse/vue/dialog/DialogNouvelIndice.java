@@ -16,6 +16,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import profitbourse.modele.Indice;
+import profitbourse.modele.majweb.ErreurCodeInconnu;
+import profitbourse.modele.majweb.ErreurCodeVide;
 import profitbourse.modele.majweb.GestionnaireMajWeb;
 import profitbourse.vue.Controleur;
 
@@ -124,20 +126,21 @@ public class DialogNouvelIndice extends JDialog {
 					nom = texteNom.getText();
 					if (nom.equals("")) throw new ErreurNomVide();
 				} else {
-					try {
+					//try {
 						nom = GestionnaireMajWeb.obtenirNomIndicePourLeCode(code);
-						if (nom == null) throw new ErreurCodeInconnu();
+						if (nom == null) throw new ErreurCodeInconnu();/*
 					} catch (Exception e) {
 						e.printStackTrace();
 						throw new ErreurCodeInconnu();
-					}
+					}*/
 				}
 				
 				Indice nouvelIndice = new Indice(nom, code, controleur.getProjetActuel());
+				nouvelIndice.majWeb();
+				
 				controleur.getProjetActuel().ajouterNouvelIndice(nouvelIndice);
 				controleur.changerIndiceActuel(nouvelIndice);
 			
-				nouvelIndice.majWeb();
 				dispose();
 			} catch (Exception e) {
 				controleur.afficherUneErreur(e);
@@ -146,18 +149,4 @@ public class DialogNouvelIndice extends JDialog {
 		}
 	}
 	
-}
-
-class ErreurCodeVide extends Exception {
-	private static final long serialVersionUID = 8447309210674959240L;
-	public ErreurCodeVide() {
-		super("Le code est vide !");
-	}
-}
-
-class ErreurCodeInconnu extends Exception {
-	private static final long serialVersionUID = 1603078476899366696L;
-	public ErreurCodeInconnu() {
-		super("Le code ne correspond pas à un code connu !");
-	}
 }

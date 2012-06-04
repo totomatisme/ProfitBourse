@@ -25,29 +25,19 @@ public class GestionnaireMajWeb {
 	/**
 	 * Méthode qui va chercher le nom de l'<code>Action</code> pour le <code>code</code> donné.
 	 * @param code Le code (par exemple "EDF.PA").
-	 * @return Le nom (par exemple "Electricité de France"), et <code>null</code> si le code n'existe pas !
+	 * @return Le nom (par exemple "Electricité de France")
 	 */
 	public static String obtenirNomActionPourLeCode(String code) throws Exception {
-		try {
-			return new TrouverNomPourLeCode(code).recupererLeNomPourLeCode();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
+		return new TrouverNomPourLeCode(code).recupererLeNomPourLeCode();
 	}
 
 	/**
 	 * Méthode qui va chercher le nom de l'<code>Indice</code> pour le <code>code</code> donné.
 	 * @param code Le code (par exemple "^CAC").
-	 * @return Le nom (par exemple "CAC 40"), et <code>null</code> si le code n'existe pas !
+	 * @return Le nom (par exemple "CAC 40")
 	 */
 	public static String obtenirNomIndicePourLeCode(String code) throws Exception {
-		try {
-			return new TrouverNomPourLeCode(code).recupererLeNomPourLeCode();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
+		return new TrouverNomPourLeCode(code).recupererLeNomPourLeCode();
 	}
 
 }

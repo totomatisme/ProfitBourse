@@ -50,7 +50,7 @@ public class MiseAJourIndices extends AbstractMiseAJour {
 		
 		// Si le code n'est pas bon c'est qu'il y a un serieux problème !
 		if (!indiceTraite.getCode().equals(code)) {
-			throw new CodeNeCorrespondPasAuCodeDeYahoo();
+			throw new CodeNeCorrespondPasAuCodeDeYahoo(indiceTraite.getCode(), code);
 		}
 		
 		ValeurCoursPoints valeurCoursPoints = new ValeurCoursPoints(cours);

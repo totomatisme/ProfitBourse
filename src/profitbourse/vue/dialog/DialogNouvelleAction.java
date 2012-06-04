@@ -16,6 +16,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import profitbourse.modele.Action;
+import profitbourse.modele.majweb.ErreurCodeInconnu;
+import profitbourse.modele.majweb.ErreurCodeVide;
 import profitbourse.modele.majweb.GestionnaireMajWeb;
 import profitbourse.vue.Controleur;
 
@@ -137,13 +139,13 @@ public class DialogNouvelleAction extends JDialog {
 					nom = texteNom.getText();
 					if (nom.equals("")) throw new ErreurNomVide();
 				} else {
-					try {
+					//try {
 						nom = GestionnaireMajWeb.obtenirNomActionPourLeCode(code);
-						if (nom == null) throw new ErreurCodeInconnu();
+						if (nom == null) throw new ErreurCodeInconnu();/*
 					} catch (Exception e) {
 						e.printStackTrace();
 						throw new ErreurCodeInconnu();
-					}
+					}*/
 				}
 				
 				String quantiteString = texteQuantite.getText();
@@ -156,10 +158,10 @@ public class DialogNouvelleAction extends JDialog {
 				if (quantite < 0) throw new Exception("La quantité '" + quantiteString + "' est négative !");
 				
 				Action nouvelleAction = new Action(nom, code, quantite, controleur.getPortefeuilleActuel());
-			
+				nouvelleAction.premiereMajWeb();
+				
 				controleur.getPortefeuilleActuel().ajouterNouvelleAction(nouvelleAction);
 				controleur.changerActionActuelle(nouvelleAction);
-				nouvelleAction.premiereMajWeb();
 				
 				dispose();
 			} catch (Exception e) {

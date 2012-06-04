@@ -93,6 +93,9 @@ class EchecDuParser extends Exception {
 class CodeNeCorrespondPasAuCodeDeYahoo extends Exception {
 	private static final long serialVersionUID = 32345954516649653L;
 	public CodeNeCorrespondPasAuCodeDeYahoo() {
-		super("Yahoo a renvoyé les valeurs des quotations dans un ordre incorrect. Les codes ne correspondent pas.");
+		super("Le code ne correspond pas au code donné par Yahoo (problème de majuscules ?).");
+	}
+	public CodeNeCorrespondPasAuCodeDeYahoo(String code, String codeYahoo) {
+		super("Le code '" + code + "' ne correspond pas au code '" + codeYahoo + "' donné par Yahoo (problème de majuscules ?).");
 	}
 }
