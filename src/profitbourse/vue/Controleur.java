@@ -167,6 +167,7 @@ public class Controleur {
 	public boolean chargerUnAutreProjet(File fichierProjet) {
 		try {
 			Projet nouveauProjet = GestionnaireSauvegarde.chargerProjetDepuisFichier(fichierProjet);
+			nouveauProjet.setFichierSauvegarde(fichierProjet);
 			this.changerDeProjetActuel(nouveauProjet);
 			return true;
 		} catch (FileNotFoundException e) {

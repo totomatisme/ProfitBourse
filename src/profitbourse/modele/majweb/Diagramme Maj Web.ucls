@@ -1,0 +1,69 @@
+<class-diagram version="1.0.8" icons="true" always-add-relationships="true" generalizations="true" realizations="true" 
+  associations="true" dependencies="true" nesting-relationships="true">  
+  <class id="1" corner="BOTTOM_RIGHT" language="java" name="profitbourse.modele.majweb.AbstractMiseAJour" 
+    project="ProfitBourse" file="/ProfitBourse/src/profitbourse/modele/majweb/AbstractMiseAJour.java" binary="false">    
+    <position height="-1" width="-1" x="742" y="135"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <class id="2" corner="BOTTOM_RIGHT" language="java" name="profitbourse.modele.majweb.GestionnaireMajWeb" 
+    project="ProfitBourse" file="/ProfitBourse/src/profitbourse/modele/majweb/GestionnaireMajWeb.java" binary="false">    
+    <position height="-1" width="-1" x="395" y="150"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <class id="3" corner="BOTTOM_RIGHT" language="java" name="profitbourse.modele.majweb.MiseAJourActions" 
+    project="ProfitBourse" file="/ProfitBourse/src/profitbourse/modele/majweb/MiseAJourActions.java" binary="false">    
+    <position height="-1" width="-1" x="600" y="327"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="true" signature="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <class id="4" corner="BOTTOM_RIGHT" language="java" name="profitbourse.modele.majweb.MiseAJourIndices" 
+    project="ProfitBourse" file="/ProfitBourse/src/profitbourse/modele/majweb/MiseAJourIndices.java" binary="false">    
+    <position height="-1" width="-1" x="882" y="327"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="true" signature="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <class id="5" corner="BOTTOM_RIGHT" language="java" name="profitbourse.modele.majweb.TrouverNomPourLeCode" 
+    project="ProfitBourse" file="/ProfitBourse/src/profitbourse/modele/majweb/TrouverNomPourLeCode.java" binary="false">    
+    <position height="-1" width="-1" x="331" y="344"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <dependency id="6">    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="4"/>  
+  </dependency>  
+  <dependency id="7">    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="5"/>  
+  </dependency>  
+  <generalization id="8">    
+    <end type="SOURCE" refId="4"/>    
+    <end type="TARGET" refId="1"/>  
+  </generalization>  
+  <generalization id="9">    
+    <end type="SOURCE" refId="3"/>    
+    <end type="TARGET" refId="1"/>  
+  </generalization>  
+  <dependency id="10">    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="3"/>  
+  </dependency>  
+  <classifier-display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+    visibility="true">    
+    <attributes public="true" package="true" protected="true" private="true"/>    
+    <operations public="true" package="true" protected="true" private="true"/>  
+  </classifier-display>  
+  <association-display labels="true" multiplicity="true"/>
+</class-diagram>
